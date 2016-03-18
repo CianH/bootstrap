@@ -18,4 +18,4 @@ cinst putty -y
 cmd /c mklink /D  "$env:USERPROFILE\Documents\WindowsPowerShell\" "$env:USERPROFILE\Documents\github\bootstrap\powershell\"
 
 # Setup vimrc
-cmd /c mklink "$env:USERPROFILE\_vimrc" "$env:USERPROFILE\Documents\github\bootstrap\dotvimrc"
+cmd /c mklink "$env:USERPROFILE\_vimrc" "$env:USERPROFILE\Documents\github\bootstrap\.vimrc"
