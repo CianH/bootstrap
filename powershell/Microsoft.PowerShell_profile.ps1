@@ -24,7 +24,7 @@ function mkdlink { cmd /c mklink /D $args }
 ##-------------------------------------------
 ## Load Script Libraries
 ##-------------------------------------------
-$lib_home = "$env:USERPROFILE\Documents\GitHub\bootstrap\powershell\scripts"
+$lib_home = "$PSScriptRoot\scripts"
 Get-ChildItem $lib_home\*.ps1 | ForEach-Object {. (Join-Path $lib_home $_.Name)} | Out-Null
 
 ##-------------------------------------------

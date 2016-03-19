@@ -15,7 +15,7 @@ cinst procexp -y
 cinst putty -y
 
 # Setup Powershell symlinks
-cmd /c mklink /D  "$env:USERPROFILE\Documents\WindowsPowerShell\" "$env:USERPROFILE\Documents\github\bootstrap\powershell\"
+cmd /c mklink /D  "$env:USERPROFILE\Documents\WindowsPowerShell\" "$PSScriptRoot"
 
 # Setup vimrc
-cmd /c mklink "$env:USERPROFILE\_vimrc" "$env:USERPROFILE\Documents\github\bootstrap\.vimrc"
+cmd /c mklink "$env:USERPROFILE\_vimrc" "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
