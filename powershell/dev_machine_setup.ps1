@@ -13,6 +13,7 @@ cinst notepadplusplus -y
 cinst vim -y
 cinst procexp -y
 cinst putty -y
+cinst nuget.commandline -y
 
 # Setup Powershell symlinks
 cmd /c mklink /D  "$env:USERPROFILE\Documents\WindowsPowerShell\" "$PSScriptRoot"
