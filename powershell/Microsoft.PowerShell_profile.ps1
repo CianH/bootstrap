@@ -35,3 +35,12 @@ Get-ChildItem $lib_home\*.ps1 | ForEach-Object {. (Join-Path $lib_home $_.Name)}
 
 # Shell.ps1 overwrites TMP and TEMP with a version with a trailing '\' 
 $env:TMP = $env:TEMP = [system.io.path]::gettemppath().TrimEnd('\') 
+
+##-------------------------------------------
+## Key Remaps
+##-------------------------------------------
+# flip Up/Down and F8/Shift+F8
+Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadlineKeyHandler -Key F8 -Function PreviousHistory
+Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
