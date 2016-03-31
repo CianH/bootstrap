@@ -1,6 +1,7 @@
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
+Set-Alias claer clear
 Set-Alias npp "C:\Program Files (x86)\Notepad++\notepad++.exe"
 Set-Alias vs "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 
