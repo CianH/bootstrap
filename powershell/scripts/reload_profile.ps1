@@ -6,10 +6,10 @@ function Reload-Profile {
         $Profile.CurrentUserCurrentHost
     ) | % {
         if(Test-Path $_){
-            Write-Verbose "Running $_"
+            Write-Output "Running $_"
             . $_
         }
-    }    
+    }
 }
 
 Set-Alias reload Reload-Profile

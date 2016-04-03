@@ -22,6 +22,8 @@ function mklink { cmd /c mklink $args }
 
 function mkdlink { cmd /c mklink /D $args }
 
+function hosts { sudo { npp "$env:windir\system32\drivers\etc\hosts" } }
+
 ##-------------------------------------------
 ## Load Script Libraries
 ##-------------------------------------------
