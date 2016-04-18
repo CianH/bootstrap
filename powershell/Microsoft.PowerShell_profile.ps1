@@ -33,6 +33,10 @@ function admin([Parameter(Mandatory=$true)]$cmd) { Start-Process $cmd -Verb runA
 
 function gas([Parameter(Mandatory=$true)]$cmd) { gal | ? { $_.Definition -match $cmd } }
 
+function hostsb { cp "$env:windir\System32\drivers\etc\hosts" "$env:USERPROFILE\OneDrive\Synced" }
+
+function hostsr { cp "$env:USERPROFILE\OneDrive\Synced\hosts" "$env:windir\System32\drivers\etc" } # requires ownership of path, otherwise wrap in sudo
+
 function block([Parameter(Mandatory=$true)]$url) { ac -Path "$env:windir\system32\drivers\etc\hosts" -Value "`r`n0.0.0.0 $url" -NoNewline }
 
 ##-------------------------------------------

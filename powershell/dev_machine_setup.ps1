@@ -29,13 +29,5 @@ cmd /c mklink /D "$env:USERPROFILE\Documents\WindowsPowerShell\" "$PSScriptRoot"
 # Setup vimrc
 cmd /c mklink "$env:USERPROFILE\_vimrc" "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
 
-# Setup hosts file
-$hostsPath = "$env:windir\System32\drivers\etc\hosts"
-$syncedHosts = "$env:USERPROFILE\OneDrive\Synced\hosts"
-if (Test-Path "$syncedHosts") {
-	mv "$hostsPath" "$hostsPath.old"
-	cmd /c mklink "$hostsPath" "$syncedHosts"
-}
-
 # Enable Windows Optional Features
 try { Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" } catch {} # Fails on TH2, swallow the error.
