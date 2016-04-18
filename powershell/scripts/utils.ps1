@@ -1,8 +1,3 @@
-function Get-AliasShortcut([string]$commandName) {
-	ls Alias: | ?{ $_.Definition -match $commandName }
-}
-Set-Alias gas Get-AliasShortcut
-
 function find {
 	param ([switch] $exact)
 

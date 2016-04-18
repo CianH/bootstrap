@@ -1,8 +1,13 @@
 ##-------------------------------------------
+## Variables
+##-------------------------------------------
+$editor = "C:\Program Files (x86)\Notepad++\notepad++.exe"
+
+##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
 Set-Alias claer clear
-Set-Alias npp "C:\Program Files (x86)\Notepad++\notepad++.exe"
+Set-Alias npp $editor
 Set-Alias vs "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 
 # to add arguments to a command, you need to create a function and then alias that 
@@ -12,17 +17,23 @@ Set-Alias vsadmin vs2015admin
 ##-------------------------------------------
 ## Misc functions
 ##-------------------------------------------
-function pro { npp $profile}
-
 function prompt { $env:computername + "\" + (get-location) + "> " }
 
-function which($cmd) { (gcm $cmd).Path }
+function pro { npp $profile}
+
+function hosts { Start-Process $editor -ArgumentList "-multiInst -notabbar -nosession C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
 
 function mklink { cmd /c mklink $args }
 
 function mkdlink { cmd /c mklink /D $args }
 
-function hosts { sudo { npp "$env:windir\system32\drivers\etc\hosts" } }
+function which([Parameter(Mandatory=$true)]$cmd) { (gcm $cmd).Path 2>$null }
+
+function admin([Parameter(Mandatory=$true)]$cmd) { Start-Process $cmd -Verb runAs }
+
+function gas([Parameter(Mandatory=$true)]$cmd) { gal | ? { $_.Definition -match $cmd } }
+
+function block([Parameter(Mandatory=$true)]$url) { ac -Path "$env:windir\system32\drivers\etc\hosts" -Value "`r`n0.0.0.0 $url" -NoNewline }
 
 ##-------------------------------------------
 ## Load Script Libraries
