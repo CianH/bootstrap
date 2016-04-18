@@ -39,3 +39,4 @@ CleanupStartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
 CleanupStartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
 CleanupStartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
 CleanupStartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
+CleanupStartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
