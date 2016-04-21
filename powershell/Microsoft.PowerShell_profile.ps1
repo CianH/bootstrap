@@ -37,8 +37,6 @@ function hostsb { cp "$env:windir\System32\drivers\etc\hosts" "$env:USERPROFILE\
 
 function hostsr { cp "$env:USERPROFILE\OneDrive\Synced\hosts" "$env:windir\System32\drivers\etc" } # requires ownership of path, otherwise wrap in sudo
 
-function block([Parameter(Mandatory=$true)]$url) { ac -Path "$env:windir\system32\drivers\etc\hosts" -Value "`r`n0.0.0.0 $url" -NoNewline }
-
 ##-------------------------------------------
 ## Load Script Libraries
 ##-------------------------------------------
