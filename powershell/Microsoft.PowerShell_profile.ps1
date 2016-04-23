@@ -49,11 +49,15 @@ Get-ChildItem $lib_home\*.ps1 | ForEach-Object {. (Join-Path $lib_home $_.Name)}
 ##-------------------------------------------
 ## Load Git
 ##-------------------------------------------
-. (Resolve-Path "$env:LOCALAPPDATA\GitHub\shell.ps1")
-. $env:github_posh_git\profile.example.ps1
+if (Test-Path "$env:LOCALAPPDATA\GitHub\shell.ps1")
+{
+	. (Resolve-Path "$env:LOCALAPPDATA\GitHub\shell.ps1")
+	. $env:github_posh_git\profile.example.ps1
 
-# Shell.ps1 overwrites TMP and TEMP with a version with a trailing '\' 
-$env:TMP = $env:TEMP = [system.io.path]::gettemppath().TrimEnd('\') 
+	# Shell.ps1 overwrites TMP and TEMP with a version with a trailing '\' 
+	$env:TMP = $env:TEMP = [system.io.path]::gettemppath().TrimEnd('\') 
+}
+else { Write-Warning "Git Shell not present" }
 
 ##-------------------------------------------
 ## Key Remaps
