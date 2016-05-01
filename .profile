@@ -1,4 +1,5 @@
 export PATH=.:~/bin:/usr/local/sbin:$PATH
+export HOMEBREW_NO_ANALYTICS=1
 
 # aliases
 alias la="ls -lah"
