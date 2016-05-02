@@ -1,3 +1,11 @@
+Requires Admin prompt
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+{
+	$arguments = "& '" + $myinvocation.mycommand.definition + "'"
+	Start-Process powershell -Verb runAs -ArgumentList $arguments
+	Break
+}
+
 ### Used to remove annoying folders and shortcuts that pollute my start menu after every upgrade ###
 $ProgramDataStart = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 $AppDataStart = "$env:AppData\Microsoft\Windows\Start Menu\Programs"
@@ -10,7 +18,7 @@ function CleanupStartMenuShortcut{
 		[switch]$Desktop
 	)
 	
-	Write-Output "Working on $ShortcutName"
+	echo "Working on $ShortcutName"
 	if (Test-Path "$RootStartMenuFolder\$ShortcutName"){
 		if (Test-Path "$RootStartMenuFolder\$FolderName"){
 			rm -r -force "$RootStartMenuFolder\$FolderName"
@@ -40,3 +48,11 @@ CleanupStartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
 CleanupStartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
 CleanupStartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
 CleanupStartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
+
+# Remove CCleaner "Open in CCleaner", etc RegKeys
+echo "Removing CCleaner regkeys"
+rm "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
+rm "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
+
+rm "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
+rm "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
