@@ -7,6 +7,7 @@ alias l="ls -lh"
 alias cd..="cd .." # common typo
 alias h="history"
 alias mv="mv -nv" # make mv safer
+alias brewup="brew outdated | xargs brew install"
 
 # homebrew 
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
