@@ -1,4 +1,4 @@
-Requires Admin prompt
+# Requires Admin prompt
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
 	$arguments = "& '" + $myinvocation.mycommand.definition + "'"
