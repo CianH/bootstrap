@@ -48,6 +48,7 @@ CleanupStartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
 CleanupStartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
 CleanupStartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
 CleanupStartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
+CleanupStartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 echo "Removing CCleaner regkeys"
