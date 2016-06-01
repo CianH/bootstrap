@@ -49,6 +49,7 @@ CleanupStartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
 CleanupStartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
 CleanupStartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
 CleanupStartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
+CleanupStartMenuShortcut $ProgramDataStart "7-Zip" "7-Zip File Manager.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 echo "Removing CCleaner regkeys"
