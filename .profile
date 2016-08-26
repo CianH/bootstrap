@@ -10,19 +10,17 @@ case "${OSTYPE}" in
     if [ -f $(brew --prefix)/etc/bash_completion ]; then
       . $(brew --prefix)/etc/bash_completion
     fi
+
+    if [ -f ~/.bashrc ]; then
+      . ~/.bashrc
+    fi
     ;;
   # Linux
   linux*)
     #[ -f ~/.bash/bashrc.linux ] && source ~/.bash/bashrc.linux
+    setterm -blength 0
     ;;
 esac
-
-# aliases
-alias la="ls -lah"
-alias l="ls -lh"
-alias cd..="cd .." # common typo
-alias h="history"
-alias mv="mv -nv" # make mv safer
 
 # history settings
 export HISTCONTROL=ignoreboth #this is the same as ignorespace:ignoredups
@@ -33,8 +31,4 @@ export HISTIGNORE="history*:ls:pwd"
 # load private extras
 if [ -f ~/.bash_extras  ]; then 
   . ~/.bash_extras 
-fi
-
-if [ -f ~/.bashrc ]; then
-  . ~/.bashrc
 fi
