@@ -29,6 +29,10 @@ export HISTFILESIZE=2000
 export HISTIGNORE="history*:ls:pwd"
 
 # load private extras
-if [ -f ~/.bash_extras  ]; then 
+if [ -f ~/.bash_extras ]; then 
   . ~/.bash_extras 
+fi
+
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
 fi
