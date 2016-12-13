@@ -1,7 +1,19 @@
 ##-------------------------------------------
 ## Variables
 ##-------------------------------------------
-$editor = "C:\Program Files (x86)\Notepad++\notepad++.exe"
+if (Test-Path "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe")
+{
+	$editor = "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe"
+}
+elseif (Test-Path "${env:ProgramFiles}\Notepad++\notepad++.exe") 
+{
+	$editor = "${env:ProgramFiles}\Notepad++\notepad++.exe"
+}
+else
+{
+	Write-Warning "Notepad++ not found, defaulting to notepad. Editor-based shortcuts might be broken."
+	$editor = "C:\Windows\system32\notepad.exe"
+}
 
 ##-------------------------------------------
 ## Aliases
@@ -20,7 +32,7 @@ Set-Alias vsadmin vs2015admin
 ##-------------------------------------------
 function prompt { $env:computername + "\" + (get-location) + "> " }
 
-function pro { npp $profile}
+function pro { npp $profile }
 
 function hosts { Start-Process $editor -ArgumentList "-multiInst -notabbar -nosession C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
 
