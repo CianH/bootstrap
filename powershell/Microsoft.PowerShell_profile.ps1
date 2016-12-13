@@ -21,7 +21,7 @@ else
 Set-Alias claer clear
 Set-Alias npp $editor
 Set-Alias vs "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
-set-alias sz "$env:ProgramFiles\7-Zip\7z.exe" 
+Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe" 
 
 # to add arguments to a command, you need to create a function and then alias that 
 function vs2015admin {Start-Process "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe" -verb runAs} 
