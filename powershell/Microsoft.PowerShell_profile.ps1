@@ -79,3 +79,8 @@ Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 Set-PSReadlineKeyHandler -Key F8 -Function PreviousHistory
 Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
+
+##-------------------------------------------
+## Console State
+##-------------------------------------------
+Set-PSReadlineOption -BellStyle Visual
