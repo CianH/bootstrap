@@ -10,7 +10,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $ProgramDataStart = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 $AppDataStart = "$env:AppData\Microsoft\Windows\Start Menu\Programs"
 
-function CleanupStartMenuShortcut{
+function Update-StartMenuShortcut{
 	param(
 		$RootStartMenuFolder,
 		$FolderName,
@@ -18,44 +18,55 @@ function CleanupStartMenuShortcut{
 		[switch]$Desktop
 	)
 	
-	echo "Working on $ShortcutName"
+	Write-Output "Working on $ShortcutName"
 	if (Test-Path "$RootStartMenuFolder\$ShortcutName"){
 		if (Test-Path "$RootStartMenuFolder\$FolderName"){
-			rm -r -force "$RootStartMenuFolder\$FolderName"
+			Remove-Item -r -force "$RootStartMenuFolder\$FolderName"
 		}
 	}
 	else{
-		if (Test-Path $RootStartMenuFolder\$FolderName\$ShortcutName)
-		{
-			mv $RootStartMenuFolder\$FolderName\$ShortcutName $ExpectedShortcutLocation\
+		if (Test-Path $RootStartMenuFolder\$FolderName\$ShortcutName){
+			Move-Item $RootStartMenuFolder\$FolderName\$ShortcutName $ExpectedShortcutLocation\
 		}
 	}
 	if ($Desktop){
-		if (Test-Path "$env:PUBLIC\Desktop\$ShortcutName"){
-			rm "$env:PUBLIC\Desktop\$ShortcutName"
-		}
-		if (Test-Path "$env:USERPROFILE\Desktop\$ShortcutName"){
-			rm "$env:USERPROFILE\Desktop\$ShortcutName"
-		}
+		Remove-DesktopShortcut $ShortcutName
 	}
 }
 
-CleanupStartMenuShortcut $ProgramDataStart "CCleaner" "CCleaner.lnk" -Desktop
-CleanupStartMenuShortcut $ProgramDataStart "Dropbox" "Dropbox.lnk"
-CleanupStartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
-CleanupStartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
-CleanupStartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
-CleanupStartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
-CleanupStartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
-CleanupStartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
-CleanupStartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
-CleanupStartMenuShortcut $ProgramDataStart "7-Zip" "7-Zip File Manager.lnk"
-CleanupStartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
+function Remove-DesktopShortcut{
+  param(
+    [parameter(Mandatory = $true)]$ShortcutName
+  )
+  
+  if (Test-Path "$env:PUBLIC\Desktop\$ShortcutName"){
+		Remove-Item "$env:PUBLIC\Desktop\$ShortcutName"
+	}
+	if (Test-Path "$env:USERPROFILE\Desktop\$ShortcutName"){
+		Remove-Item "$env:USERPROFILE\Desktop\$ShortcutName"
+	}  
+}
+
+Update-StartMenuShortcut $ProgramDataStart "7-Zip" "7-Zip File Manager.lnk"
+Update-StartMenuShortcut $ProgramDataStart "CCleaner" "CCleaner.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "Dropbox" "Dropbox.lnk"
+Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
+Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
+Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
+Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
+Update-StartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
+Update-StartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
+Update-StartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
+
+Remove-DesktopShortcut "Google Chrome.lnk"
+Remove-DesktopShortcut "Mozilla Firefox.lnk"
+Remove-DesktopShortcut "Visual Studio Code.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
-echo "Removing CCleaner regkeys"
-rm "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
-rm "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
+Write-Output "Removing CCleaner regkeys"
+Remove-Item "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
+Remove-Item "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
 
-rm "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
-rm "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
+Remove-Item "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
+Remove-Item "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
