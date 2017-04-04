@@ -62,6 +62,7 @@ Update-StartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
 Remove-DesktopShortcut "Google Chrome.lnk"
 Remove-DesktopShortcut "Mozilla Firefox.lnk"
 Remove-DesktopShortcut "Visual Studio Code.lnk"
+Remove-DesktopShortcut "WinSCP.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 Write-Output "Removing CCleaner regkeys"
