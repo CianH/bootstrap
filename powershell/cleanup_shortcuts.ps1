@@ -54,7 +54,7 @@ Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
 Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
-Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk"
+Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
 Update-StartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
 Update-StartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
