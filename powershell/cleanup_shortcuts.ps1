@@ -53,6 +53,7 @@ Update-StartMenuShortcut $ProgramDataStart "Dropbox" "Dropbox.lnk"
 Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
 Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "Steam" "Steam.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
 Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
