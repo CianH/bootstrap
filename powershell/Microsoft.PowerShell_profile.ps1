@@ -15,17 +15,28 @@ else
 	$editor = "C:\Windows\system32\notepad.exe"
 }
 
+$vs2015 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
+$vs2017 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe"
+if (Test-Path $vs2015)
+{
+	$vs = $vs2015
+}
+elseif (Test-Path $vs2017)
+{
+	$vs = $vs2017
+}
+
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
 Set-Alias claer clear
 Set-Alias npp $editor
-Set-Alias vs "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
-Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe" 
+Set-Alias vs $vs
+Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 
-# to add arguments to a command, you need to create a function and then alias that 
-function vs2015admin {Start-Process "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe" -verb runAs} 
-Set-Alias vsadmin vs2015admin
+# to add arguments to a command, you need to create a function and then alias that
+function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
+Set-Alias vsadmin vsrunasadmin
 
 ##-------------------------------------------
 ## Misc functions
