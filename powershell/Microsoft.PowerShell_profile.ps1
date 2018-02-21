@@ -33,6 +33,7 @@ Set-Alias claer clear
 Set-Alias npp $editor
 Set-Alias vs $vs
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+Set-Alias open start
 
 # to add arguments to a command, you need to create a function and then alias that
 function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
