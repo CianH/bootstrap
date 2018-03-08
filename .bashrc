@@ -2,6 +2,8 @@
 # If not running interactively, return
 [[ $- = *i* ]] || return
 
+exists() { test -x "$(command -v "$1")"; }
+
 # history settings
 shopt -s histappend
 HISTCONTROL=ignoreboth
@@ -13,7 +15,7 @@ HISTIGNORE="history*:ls:pwd"
 shopt -s checkwinsize
 shopt -s cmdhist
 shopt -s extglob
-shopt -s globstar
+shopt -s globstar # bash 4.0+ only
 
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
   debian_chroot=$(cat /etc/debian_chroot)
@@ -66,3 +68,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# direnv
+exists direnv && eval "#$(direnv hook bash)"
