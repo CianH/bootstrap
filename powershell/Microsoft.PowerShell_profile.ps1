@@ -18,13 +18,13 @@ else
 $vs2015 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 $vs2017 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe"
 $vs2017c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe"
-if (Test-Path $vs2015)
-{
-	$vs = $vs2015
-}
-elseif (Test-Path $vs2017)
+if (Test-Path $vs2017)
 {
 	$vs = $vs2017
+}
+elseif (Test-Path $vs2015)
+{
+	$vs = $vs2015
 }
 elseif (Test-Path $vs2017c)
 {
