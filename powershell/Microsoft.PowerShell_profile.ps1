@@ -1,16 +1,13 @@
 ##-------------------------------------------
 ## Variables
 ##-------------------------------------------
-if (Test-Path "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe")
-{
+if (Test-Path "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe"){
 	$editor = "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe"
 }
-elseif (Test-Path "${env:ProgramFiles}\Notepad++\notepad++.exe") 
-{
+elseif (Test-Path "${env:ProgramFiles}\Notepad++\notepad++.exe"){
 	$editor = "${env:ProgramFiles}\Notepad++\notepad++.exe"
 }
-else
-{
+else{
 	Write-Warning "Notepad++ not found, defaulting to notepad. Editor-based shortcuts might be broken."
 	$editor = "C:\Windows\system32\notepad.exe"
 }
@@ -18,31 +15,26 @@ else
 $vs2015 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 $vs2017 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe"
 $vs2017c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe"
-if (Test-Path $vs2017)
-{
-	$vs = $vs2017
-}
-elseif (Test-Path $vs2015)
-{
-	$vs = $vs2015
-}
-elseif (Test-Path $vs2017c)
-{
-	$vs = $vs2017c
-}
+if (Test-Path $vs2017){ $vs = $vs2017 }
+elseif (Test-Path $vs2015){ $vs = $vs2015 }
+elseif (Test-Path $vs2017c) { $vs = $vs2017c }
 
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
 Set-Alias claer clear
+Set-Alias edit $editor
+Set-Alias e $editor
 Set-Alias npp $editor
-Set-Alias vs $vs
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
 
-# to add arguments to a command, you need to create a function and then alias that
-function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
-Set-Alias vsadmin vsrunasadmin
+if ($vs){
+	Set-Alias vs $vs
+	# to add arguments to a command, you need to create a function and then alias that
+	function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
+	Set-Alias vsadmin vsrunasadmin
+}
 
 ##-------------------------------------------
 ## Misc functions
