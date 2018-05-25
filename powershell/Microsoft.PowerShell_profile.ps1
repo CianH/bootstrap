@@ -1,41 +1,32 @@
 ##-------------------------------------------
+## Environment Settings
+##-------------------------------------------
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
+
+##-------------------------------------------
 ## Variables
 ##-------------------------------------------
-if (Test-Path "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe")
-{
-	$editor = "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe"
-}
-elseif (Test-Path "${env:ProgramFiles}\Notepad++\notepad++.exe") 
-{
-	$editor = "${env:ProgramFiles}\Notepad++\notepad++.exe"
-}
-else
-{
-	Write-Warning "Notepad++ not found, defaulting to notepad. Editor-based shortcuts might be broken."
+$code = "${env:ProgramFiles}\Microsoft VS Code\bin\code"
+$npp  = "${env:ProgramFiles}\Notepad++\notepad++.exe"
+if (Test-Path $code) { $editor = $code }
+elseif (Test-Path $npp) { $editor = $npp }
+else {
+	Write-Warning "Default editor falling back to notepad"
 	$editor = "C:\Windows\system32\notepad.exe"
 }
 
-$vs2015 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 $vs2017 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe"
 $vs2017c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe"
-if (Test-Path $vs2017)
-{
-	$vs = $vs2017
-}
-elseif (Test-Path $vs2015)
-{
-	$vs = $vs2015
-}
-elseif (Test-Path $vs2017c)
-{
-	$vs = $vs2017c
-}
+if (Test-Path $vs2017) { $vs = $vs2017 }
+elseif (Test-Path $vs2017c) { $vs = $vs2017c }
+else { Write-Warning "Visual Studio not installed" }
 
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
 Set-Alias claer clear
-Set-Alias npp $editor
+Set-Alias npp $npp
+Set-Alias code $code
 Set-Alias vs $vs
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
@@ -101,3 +92,9 @@ Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
 ## Console State
 ##-------------------------------------------
 Set-PSReadlineOption -BellStyle Visual
+
+##-------------------------------------------
+## Chocolatey Profile
+##-------------------------------------------
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
