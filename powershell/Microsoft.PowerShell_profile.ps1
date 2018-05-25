@@ -27,13 +27,18 @@ else { Write-Warning "Visual Studio not installed" }
 Set-Alias claer clear
 Set-Alias npp $npp
 Set-Alias code $code
+Set-Alias edit $editor
+Set-Alias e $editor
 Set-Alias vs $vs
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
 
-# to add arguments to a command, you need to create a function and then alias that
-function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
-Set-Alias vsadmin vsrunasadmin
+if ($vs){
+	Set-Alias vs $vs
+	# to add arguments to a command, you need to create a function and then alias that
+	function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
+	Set-Alias vsadmin vsrunasadmin
+}
 
 ##-------------------------------------------
 ## Misc functions
