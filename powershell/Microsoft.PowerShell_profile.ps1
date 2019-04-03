@@ -43,11 +43,12 @@ if ($vs){
 ##-------------------------------------------
 ## Misc functions
 ##-------------------------------------------
-function prompt { $env:computername + "\" + (get-location) + "> " }
+# This interferes with posh-git prompt
+#function prompt { $env:computername + "\" + (get-location) + "> " }
 
 function pro { npp $profile }
 
-function hosts { Start-Process $editor -ArgumentList "-multiInst -notabbar -nosession C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
+function hosts { Start-Process $npp -ArgumentList "-multiInst -notabbar -nosession C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
 
 function mklink { cmd /c mklink $args }
 
@@ -99,7 +100,9 @@ Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
 Set-PSReadlineOption -BellStyle Visual
 
 ##-------------------------------------------
-## Chocolatey Profile
+## Chocolatey profile
 ##-------------------------------------------
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
