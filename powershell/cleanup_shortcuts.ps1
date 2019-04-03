@@ -17,7 +17,7 @@ function Update-StartMenuShortcut{
 		$ShortcutName,
 		[switch]$Desktop
 	)
-	
+
 	Write-Output "Working on $ShortcutName"
 	if (Test-Path "$RootStartMenuFolder\$ShortcutName"){
 		if (Test-Path "$RootStartMenuFolder\$FolderName"){
@@ -35,25 +35,28 @@ function Update-StartMenuShortcut{
 }
 
 function Remove-DesktopShortcut{
-  param(
-    [parameter(Mandatory = $true)]$ShortcutName
-  )
-  
+	param(
+		[parameter(Mandatory = $true)]$ShortcutName
+	)
+
   if (Test-Path "$env:PUBLIC\Desktop\$ShortcutName"){
 		Remove-Item "$env:PUBLIC\Desktop\$ShortcutName"
 	}
 	if (Test-Path "$env:USERPROFILE\Desktop\$ShortcutName"){
 		Remove-Item "$env:USERPROFILE\Desktop\$ShortcutName"
-	}  
+	}
 }
 
 Update-StartMenuShortcut $ProgramDataStart "7-Zip" "7-Zip File Manager.lnk"
 Update-StartMenuShortcut $ProgramDataStart "CCleaner" "CCleaner.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Dropbox" "Dropbox.lnk"
-Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "HandBrake" "HandBrake.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "MKVToolNix" "MKVToolNix GUI.lnk"
+Update-StartMenuShortcut $ProgramDataStart "Mp3tag" "Mp3tag.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
-Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Steam" "Steam.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
 Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
@@ -64,6 +67,7 @@ Remove-DesktopShortcut "Google Chrome.lnk"
 Remove-DesktopShortcut "Mozilla Firefox.lnk"
 Remove-DesktopShortcut "Visual Studio Code.lnk"
 Remove-DesktopShortcut "WinSCP.lnk"
+Remove-DesktopShortcut "GitHub Desktop.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 Write-Output "Removing CCleaner regkeys"
