@@ -15,10 +15,10 @@ else {
 	$editor = "C:\Windows\system32\notepad.exe"
 }
 
-$vs2017 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe"
-$vs2017c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe"
-if (Test-Path $vs2017) { $vs = $vs2017 }
-elseif (Test-Path $vs2017c) { $vs = $vs2017c }
+$vs2019 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe"
+$vs2019c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
+if (Test-Path $vs2019) { $vs = $vs2019 }
+elseif (Test-Path $vs2019c) { $vs = $vs2019c }
 else { Write-Warning "Visual Studio not installed" }
 
 ##-------------------------------------------
@@ -36,7 +36,7 @@ Set-Alias open start
 if ($vs){
 	Set-Alias vs $vs
 	# to add arguments to a command, you need to create a function and then alias that
-	function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
+	function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
 	Set-Alias vsadmin vsrunasadmin
 }
 
