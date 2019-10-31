@@ -29,7 +29,6 @@ Set-Alias npp $npp
 Set-Alias code $code
 Set-Alias edit $editor
 Set-Alias e $editor
-Set-Alias vs $vs
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
 
