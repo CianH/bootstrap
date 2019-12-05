@@ -12,13 +12,22 @@ if (Test-Path $code) { $editor = $code }
 elseif (Test-Path $npp) { $editor = $npp }
 else {
 	Write-Warning "Default editor falling back to notepad"
-	$editor = "C:\Windows\system32\notepad.exe"
+	$editor = "${$env:windir}\system32\notepad.exe"
 }
 
-$vs2019 = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe"
-$vs2019c = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
-if (Test-Path $vs2019) { $vs = $vs2019 }
-elseif (Test-Path $vs2019c) { $vs = $vs2019c }
+##-------------------------------------------
+## Visual Studio
+##-------------------------------------------
+$editions = @('Enterprise', 'Professional', 'Community')
+foreach ($edition in $editions) {
+	$vs_loc = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\$edition\Common7\IDE\devenv.exe"
+	if (Test-Path $vs_loc)
+	{
+		$vs = $vs_loc
+		break
+	}
+}
+if ($vs) { Set-Alias vs $vs }
 else { Write-Warning "Visual Studio not installed" }
 
 ##-------------------------------------------
@@ -32,21 +41,15 @@ Set-Alias e $editor
 Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
 
-if ($vs){
-	Set-Alias vs $vs
-	# to add arguments to a command, you need to create a function and then alias that
-	function vsrunasadmin {Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe" -verb runAs} 
-	Set-Alias vsadmin vsrunasadmin
-}
-
 ##-------------------------------------------
 ## Misc functions
 ##-------------------------------------------
 # This interferes with posh-git prompt
 #function prompt { $env:computername + "\" + (get-location) + "> " }
 
-function pro { npp $profile }
+function pro { edit $profile }
 
+# TODO: Fix for when npp not installed
 function hosts { Start-Process $npp -ArgumentList "-multiInst -notabbar -nosession C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
 
 function mklink { cmd /c mklink $args }
