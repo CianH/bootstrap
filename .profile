@@ -10,6 +10,7 @@ if [[ $OSTYPE = darwin* ]]; then
     # homebrew
     export HOMEBREW_NO_ANALYTICS=1
     export DOTNET_CLI_TELEMETRY_OPTOUT=1
+    export BASH_SILENCE_DEPRECATION_WARNING=1 # stop nagging me
     alias brewup="brew outdated | xargs brew install"
     if [ -f $(brew --prefix)/etc/bash_completion ]; then
       . $(brew --prefix)/etc/bash_completion

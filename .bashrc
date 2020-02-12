@@ -15,7 +15,7 @@ HISTIGNORE="history*:ls:pwd"
 shopt -s checkwinsize
 shopt -s cmdhist
 shopt -s extglob
-shopt -s globstar # bash 4.0+ only
+[ "${BASH_VERSINFO}" -ge 4 ] && shopt -s globstar # bash 4.0+ only
 
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
   debian_chroot=$(cat /etc/debian_chroot)
