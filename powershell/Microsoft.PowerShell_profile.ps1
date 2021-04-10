@@ -68,6 +68,8 @@ function hostsr { cp "$env:USERPROFILE\OneDrive\Synced\hosts" "$env:windir\Syste
 
 function zipall($delete) { ls -Directory | % { sz a -t7z "$_.7z" ".\$_\*"; if ($delete){ rm -r -force $_ } } }
 
+function dirs2cbz($delete) { ls -Directory | % { sz a -tzip "$_.cbz" ".\$_\*"; if ($delete){ rm -r -force $_ } } }
+
 ##-------------------------------------------
 ## Load Script Libraries
 ##-------------------------------------------
@@ -100,11 +102,3 @@ Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
 ## Console State
 ##-------------------------------------------
 Set-PSReadlineOption -BellStyle Visual
-
-##-------------------------------------------
-## Chocolatey profile
-##-------------------------------------------
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
-}
