@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Be careful of EOL chars here - running on WSL from Windows mount point made a bunch of strange filenames due to linebreak errors
 
 BASEDIR=`dirname $0`
 
