@@ -26,7 +26,7 @@ function Update-StartMenuShortcut{
 	}
 	else{
 		if (Test-Path $RootStartMenuFolder\$FolderName\$ShortcutName){
-			Move-Item $RootStartMenuFolder\$FolderName\$ShortcutName $ExpectedShortcutLocation\
+			Move-Item $RootStartMenuFolder\$FolderName\$ShortcutName $RootStartMenuFolder\
 		}
 	}
 	if ($Desktop){
@@ -48,26 +48,22 @@ function Remove-DesktopShortcut{
 }
 
 Update-StartMenuShortcut $ProgramDataStart "7-Zip" "7-Zip File Manager.lnk"
-Update-StartMenuShortcut $ProgramDataStart "CCleaner" "CCleaner.lnk" -Desktop
-Update-StartMenuShortcut $ProgramDataStart "Dropbox" "Dropbox.lnk"
 Update-StartMenuShortcut $ProgramDataStart "HandBrake" "HandBrake.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "MKVToolNix" "MKVToolNix GUI.lnk"
 Update-StartMenuShortcut $ProgramDataStart "Mp3tag" "Mp3tag.lnk" -Desktop
-Update-StartMenuShortcut $ProgramDataStart "Notepad++" "Notepad++.lnk"
-Update-StartMenuShortcut $ProgramDataStart "Skype" "Skype.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "Steam" "Steam.lnk" -Desktop
 Update-StartMenuShortcut $ProgramDataStart "VideoLAN" "VLC media player.lnk" -Desktop
-Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub.appref-ms"
+Update-StartMenuShortcut $ProgramDataStart "calibre 64bit - E-book Management" "calibre 64bit - E-book management.lnk" -Desktop
+Update-StartMenuShortcut $ProgramDataStart "PowerToys (Preview)" "PowerToys (Preview).lnk"
+Update-StartMenuShortcut $ProgramDataStart "qBittorrent" "qBittorrent.lnk"
+Update-StartMenuShortcut $ProgramDataStart "Razer" "Razer Synapse.lnk"
+Update-StartMenuShortcut $ProgramDataStart "Visual Studio Code" "Visual Studio Code.lnk"
+Update-StartMenuShortcut $ProgramDataStart "WizTree" "WizTree.lnk"
+Update-StartMenuShortcut $AppDataStart "GitHub, Inc" "GitHub Desktop.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "Slack Technologies" "Slack.lnk" -Desktop
 Update-StartMenuShortcut $AppDataStart "Sysinternals" "Process Explorer.lnk"
-Update-StartMenuShortcut $AppDataStart "Vim 7.4" "Vim.lnk"
-Update-StartMenuShortcut $AppDataStart "WinDirStat" "WinDirStat.lnk" -Desktop
 
-Remove-DesktopShortcut "Google Chrome.lnk"
 Remove-DesktopShortcut "Mozilla Firefox.lnk"
-Remove-DesktopShortcut "Visual Studio Code.lnk"
-Remove-DesktopShortcut "WinSCP.lnk"
-Remove-DesktopShortcut "GitHub Desktop.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 Write-Output "Removing CCleaner regkeys"
