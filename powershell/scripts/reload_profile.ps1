@@ -1,4 +1,4 @@
-function Reload-Profile {
+function Import-Profile {
 	@(
 		$Profile.AllUsersAllHosts,
 		$Profile.AllUsersCurrentHost,
@@ -12,4 +12,4 @@ function Reload-Profile {
 	}
 }
 
-Set-Alias reload Reload-Profile
+Set-Alias reload Import-Profile

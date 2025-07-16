@@ -13,4 +13,4 @@ cmd /c mklink /D "$env:USERPROFILE\Documents\WindowsPowerShell\" "$PSScriptRoot"
 cmd /c mklink "$env:USERPROFILE\_vimrc" "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
 
 # Set privacy settings
-& $PSScriptRoot\privacy_settings.ps1
+# & $PSScriptRoot\privacy_settings.ps1

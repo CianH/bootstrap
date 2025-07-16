@@ -9,14 +9,14 @@ function Stop-RazerServices {
 		Break
 	}
 
-	function Service-Is-Running([String] $serviceName) {
-		return (Get-Service $serviceName | Select -expand Status) -eq "Running"
+	function Test-ServiceRunning([String] $serviceName) {
+		return (Get-Service $serviceName | Select-Object -expand Status) -eq "Running"
 	}
 
 	function Stop-Service-And-Wait(
 		[parameter(Mandatory=$true)][String] $serviceName,
 		[int] $sleepTime = 0) {
-		if (Service-Is-Running($serviceName)) {
+		if (Test-ServiceRunning($serviceName)) {
 			Write-Output "$serviceName is running, stopping"
 			Stop-Service $serviceName
 			if ($sleepTime -gt 0) {
