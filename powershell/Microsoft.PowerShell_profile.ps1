@@ -59,17 +59,15 @@ if (Test-Path $ModulePath) {
 }
 
 ##-------------------------------------------
-## Load Git
+## Load Git Integration
 ##-------------------------------------------
-if (Test-Path "$env:LOCALAPPDATA\GitHub\shell.ps1")
-{
-	. (Resolve-Path "$env:LOCALAPPDATA\GitHub\shell.ps1")
-	. $env:github_posh_git\profile.example.ps1
-
-	# Shell.ps1 overwrites TMP and TEMP with a version with a trailing '\' 
-	$env:TMP = $env:TEMP = [system.io.path]::gettemppath().TrimEnd('\') 
+try {
+    Import-Module posh-git -ErrorAction Stop
+    Write-Host "posh-git loaded successfully" -ForegroundColor Green
 }
-else { Write-Warning "Git Shell not present" }
+catch {
+    Write-Warning "Failed to load posh-git: $($_.Exception.Message)"
+}
 
 ##-------------------------------------------
 ## Key Remaps
