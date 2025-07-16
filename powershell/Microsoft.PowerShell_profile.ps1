@@ -4,80 +4,59 @@
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
 
 ##-------------------------------------------
-## Variables
+## Application Detection
 ##-------------------------------------------
-$code_program_files = "${env:ProgramFiles}\Microsoft VS Code\bin\code"
-$code_local_appdata = "${env:LocalAppData}\Programs\Microsoft VS Code\bin\code"
-
-if (Test-Path $code_local_appdata) { 
-	$editor = $code_local_appdata
-	$code = $code_local_appdata
-}
-elseif (Test-Path $code_program_files) {
-	$editor = $code_program_files
-	$code = $code_program_files
-}
-else {
-	Write-Warning "Default editor falling back to notepad"
-	$editor = "$env:windir\system32\notepad.exe"
-}
+# VS Code detection (simplified)
+$code_locations = @(
+    "${env:LocalAppData}\Programs\Microsoft VS Code\bin\code",
+    "${env:ProgramFiles}\Microsoft VS Code\bin\code"
+)
+$code = $code_locations | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 ##-------------------------------------------
-## Visual Studio
+## Visual Studio Detection
 ##-------------------------------------------
-$editions = @('Enterprise', 'Professional', 'Community')
-foreach ($edition in $editions) {
-	$vs_loc = "${env:ProgramFiles}\Microsoft Visual Studio\2022\$edition\Common7\IDE\devenv.exe"
-	if (Test-Path $vs_loc)
-	{
-		$vs = $vs_loc
-		break
-	}
-}
-if ($vs) { Set-Alias vs $vs }
-else { Write-Warning "Visual Studio not installed" }
-
+$vs_editions = @('Enterprise', 'Professional', 'Community')
+$vs = $vs_editions | ForEach-Object {
+    "${env:ProgramFiles}\Microsoft Visual Studio\2022\$_\Common7\IDE\devenv.exe"
+} | Where-Object { Test-Path $_ } | Select-Object -First 1
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
 Set-Alias claer clear
-Set-Alias code $code
-Set-Alias edit $editor
-Set-Alias e $editor
-Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 Set-Alias open start
+Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+
+# Application aliases (only set if applications exist)
+if ($code) { 
+    Set-Alias code $code
+    Set-Alias edit $code
+    Set-Alias e $code
+} else {
+    Write-Warning "VS Code not found - edit aliases not available"
+}
+
+if ($vs) { 
+    Set-Alias vs $vs 
+} else { 
+    Write-Warning "Visual Studio not found"
+}
 
 ##-------------------------------------------
-## Misc functions
+## Load CianTools Module
 ##-------------------------------------------
-# This interferes with posh-git prompt
-#function prompt { $env:computername + "\" + (get-location) + "> " }
-
-function pro { edit $profile }
-
-function hosts { Start-Process $editor -ArgumentList "C:\WINDOWS\system32\drivers\etc\hosts" -Verb runAs }
-
-function mklink { cmd /c mklink $args }
-
-function mkdlink { cmd /c mklink /D $args }
-
-function which([Parameter(Mandatory=$true)]$cmd) { (gcm $cmd).Path 2>$null }
-
-function gas([Parameter(Mandatory=$true)]$cmd) { gal | ? { $_.Definition -match $cmd } }
-
-function hostsb { cp "$env:windir\System32\drivers\etc\hosts" "$env:USERPROFILE\OneDrive\Synced" }
-
-function hostsr { cp "$env:USERPROFILE\OneDrive\Synced\hosts" "$env:windir\System32\drivers\etc" } # requires ownership of path, otherwise wrap in sudo
-
-function zipall($delete) { ls -Directory | % { sz a -t7z "$_.7z" ".\$_\*"; if ($delete){ rm -r -force $_ } } }
-
-function dirs2cbz($delete) { ls -Directory | % { sz a -tzip "$_.cbz" ".\$_\*"; if ($delete){ rm -r -force $_ } } }
-
-##-------------------------------------------
-## Load Script Libraries
-##-------------------------------------------
-$lib_home = "$PSScriptRoot\scripts"
-Get-ChildItem $lib_home\*.ps1 | ForEach-Object {. (Join-Path $lib_home $_.Name)} | Out-Null
+$ModulePath = Join-Path $PSScriptRoot "Modules\CianTools"
+if (Test-Path $ModulePath) {
+    try {
+        Import-Module $ModulePath -Force -ErrorAction Stop
+        Write-Host "CianTools module loaded. Type 'mytools' to see available functions." -ForegroundColor Green
+    }
+    catch {
+        Write-Warning "Failed to load CianTools module: $($_.Exception.Message)"
+    }
+} else {
+    Write-Warning "CianTools module not found at $ModulePath"
+}
 
 ##-------------------------------------------
 ## Load Git
