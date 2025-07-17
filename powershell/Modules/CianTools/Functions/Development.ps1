@@ -181,7 +181,7 @@ function Push-Project {
         The name or partial name of the project to navigate to.
     
     .PARAMETER BasePath
-        The base directory to search in. Defaults to Documents\GitHub.
+        The base directory to search in. If not specified, uses the configured GitRepoPath.
     
     .EXAMPLE
         Push-Project "MyProject"
@@ -205,8 +205,14 @@ function Push-Project {
         [string]$ProjectName,
         
         [Parameter(Position = 1)]
-        [string]$BasePath = "$env:USERPROFILE\Documents\GitHub"
+        [string]$BasePath
     )
+    
+    # Use configured path if not specified
+    if (-not $BasePath) {
+        $config = Get-CianToolsConfig
+        $BasePath = $config.GitRepoPath
+    }
     
     if (-not (Test-Path $BasePath)) {
         Write-Error "Base path does not exist: $BasePath"

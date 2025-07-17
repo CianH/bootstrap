@@ -180,6 +180,12 @@ function Get-CianTools {
             @{ Name = 'ConvertTo-Hex'; Alias = ''; Description = 'Convert numbers to hexadecimal' },
             @{ Name = 'Get-CianTools'; Alias = 'mytools'; Description = 'Show this help (meta!)' }
         )
+        'Configuration' = @(
+            @{ Name = 'Get-CianToolsConfig'; Alias = 'ctconfig'; Description = 'Get current configuration settings' },
+            @{ Name = 'Set-CianToolsConfig'; Alias = 'ctset'; Description = 'Set configuration values' },
+            @{ Name = 'Reset-CianToolsConfig'; Alias = 'ctreset'; Description = 'Reset configuration to defaults' },
+            @{ Name = 'Show-CianToolsConfig'; Alias = 'ctshow'; Description = 'Display configuration in readable format' }
+        )
     }
     
     if ($Category) {

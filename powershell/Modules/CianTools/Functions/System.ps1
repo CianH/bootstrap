@@ -141,11 +141,11 @@ function Backup-HostsFile {
         Useful for keeping a synchronized backup of hosts file modifications.
     
     .PARAMETER BackupPath
-        Custom backup location. Defaults to $env:USERPROFILE\OneDrive\Synced
+        Custom backup location. If not specified, uses the configured CloudStoragePath.
     
     .EXAMPLE
         Backup-HostsFile
-        Backs up hosts file to default OneDrive location
+        Backs up hosts file to configured cloud storage location
     
     .EXAMPLE
         hostsb
@@ -153,13 +153,19 @@ function Backup-HostsFile {
     
     .NOTES
         Available via alias: hostsb
-        Assumes OneDrive sync folder exists at the default location.
+        Uses CloudStoragePath from CianTools configuration.
     #>
     [CmdletBinding()]
     param(
         [Parameter(Position = 0)]
-        [string]$BackupPath = "$env:USERPROFILE\OneDrive\Synced"
+        [string]$BackupPath
     )
+    
+    # Use configured path if not specified
+    if (-not $BackupPath) {
+        $config = Get-CianToolsConfig
+        $BackupPath = $config.CloudStoragePath
+    }
     
     $hostsPath = "$env:WINDIR\System32\drivers\etc\hosts"
     
@@ -188,11 +194,11 @@ function Restore-HostsFile {
         This operation requires administrator privileges.
     
     .PARAMETER BackupPath
-        Custom backup location. Defaults to $env:USERPROFILE\OneDrive\Synced
+        Custom backup location. If not specified, uses the configured CloudStoragePath.
     
     .EXAMPLE
         Restore-HostsFile
-        Restores hosts file from default OneDrive location
+        Restores hosts file from configured cloud storage location
     
     .EXAMPLE
         hostsr
@@ -205,8 +211,14 @@ function Restore-HostsFile {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Position = 0)]
-        [string]$BackupPath = "$env:USERPROFILE\OneDrive\Synced"
+        [string]$BackupPath
     )
+    
+    # Use configured path if not specified
+    if (-not $BackupPath) {
+        $config = Get-CianToolsConfig
+        $BackupPath = $config.CloudStoragePath
+    }
     
     $hostsPath = "$env:WINDIR\System32\drivers\etc\hosts"
     $backupFile = Join-Path $BackupPath "hosts"

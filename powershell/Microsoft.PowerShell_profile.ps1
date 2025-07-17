@@ -25,7 +25,14 @@ $vs = $vs_editions | ForEach-Object {
 ##-------------------------------------------
 Set-Alias claer clear
 Set-Alias open start
-Set-Alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+
+# 7-Zip detection
+$sevenZip = "$env:ProgramFiles\7-Zip\7z.exe"
+if (Test-Path $sevenZip) {
+    Set-Alias sz $sevenZip
+} else {
+    Write-Warning "7-Zip not found - sz alias not available"
+}
 
 # Application aliases (only set if applications exist)
 if ($code) { 
