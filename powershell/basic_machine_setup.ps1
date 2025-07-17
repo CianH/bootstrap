@@ -7,10 +7,40 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 # Setup Powershell symlinks
-cmd /c mklink /D "$env:USERPROFILE\Documents\WindowsPowerShell\" "$PSScriptRoot"
+$linkPath = "$env:USERPROFILE\Documents\WindowsPowerShell"
+$targetPath = $PSScriptRoot
+
+try {
+	if (Test-Path $linkPath) {
+		Write-Warning "PowerShell profile directory already exists: $linkPath"
+	} else {
+		New-Item -ItemType SymbolicLink -Path $linkPath -Target $targetPath | Out-Null
+		Write-Host "Created PowerShell profile symlink: $linkPath -> $targetPath" -ForegroundColor Green
+	}
+}
+catch {
+	Write-Error "Failed to create PowerShell profile symlink: $($_.Exception.Message)"
+}
 
 # Setup vimrc
-cmd /c mklink "$env:USERPROFILE\_vimrc" "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
+$vimrcLink = "$env:USERPROFILE\_vimrc"
+$vimrcTarget = "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
+
+try {
+	if (Test-Path $vimrcTarget) {
+		if (Test-Path $vimrcLink) {
+			Write-Warning "Vimrc link already exists: $vimrcLink"
+		} else {
+			New-Item -ItemType SymbolicLink -Path $vimrcLink -Target $vimrcTarget | Out-Null
+			Write-Host "Created vimrc symlink: $vimrcLink -> $vimrcTarget" -ForegroundColor Green
+		}
+	} else {
+		Write-Warning "Vimrc target not found: $vimrcTarget"
+	}
+}
+catch {
+	Write-Error "Failed to create vimrc symlink: $($_.Exception.Message)"
+}
 
 # Set privacy settings
 # & $PSScriptRoot\privacy_settings.ps1

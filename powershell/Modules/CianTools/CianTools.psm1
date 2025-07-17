@@ -8,18 +8,18 @@ $FunctionsPath = Join-Path $PSScriptRoot 'Functions'
 
 # Load all function files
 if (Test-Path $FunctionsPath) {
-    Get-ChildItem -Path $FunctionsPath -Filter '*.ps1' | ForEach-Object {
-        try {
-            . $_.FullName
-            Write-Verbose "Loaded function file: $($_.Name)"
-        }
-        catch {
-            Write-Warning "Failed to load function file $($_.Name): $($_.Exception.Message)"
-        }
-    }
+	Get-ChildItem -Path $FunctionsPath -Filter '*.ps1' | ForEach-Object {
+		try {
+			. $_.FullName
+			Write-Verbose "Loaded function file: $($_.Name)"
+		}
+		catch {
+			Write-Warning "Failed to load function file $($_.Name): $($_.Exception.Message)"
+		}
+	}
 }
 else {
-    Write-Warning "Functions directory not found: $FunctionsPath"
+	Write-Warning "Functions directory not found: $FunctionsPath"
 }
 
 # Export module members (this is also defined in the manifest, but good to have here too)
