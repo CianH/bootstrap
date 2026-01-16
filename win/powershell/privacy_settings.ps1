@@ -1,7 +1,7 @@
 # Apply privacy-related registry settings
 # Each .reg file in win/regkeys/ contains a single setting with comments explaining its purpose
 
-$regkeysPath = Join-Path $PSScriptRoot "..\win\regkeys"
+$regkeysPath = Join-Path $PSScriptRoot "..\regkeys"
 
 $regFiles = @(
     "DisableAdvertisingId.reg",
