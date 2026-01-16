@@ -1,0 +1,5 @@
+Windows Registry Editor Version 5.00
+
+; Prevents websites from accessing your language list
+[HKEY_CURRENT_USER\Control Panel\International\User Profile]
+"HttpAcceptLanguageOptOut"=dword:00000001

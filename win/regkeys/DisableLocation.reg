@@ -1,0 +1,5 @@
+Windows Registry Editor Version 5.00
+
+; Disables location services for this device
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\current\device\System]
+"AllowLocation"=dword:00000000

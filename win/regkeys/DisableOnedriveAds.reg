@@ -1,4 +1,5 @@
 Windows Registry Editor Version 5.00
 
+; Disables OneDrive sync provider notifications in File Explorer
 [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
 "ShowSyncProviderNotifications"=dword:00000000

@@ -1,0 +1,5 @@
+Windows Registry Editor Version 5.00
+
+; Stops sending typing and handwriting data to Microsoft
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Input\TIPC]
+"Enabled"=dword:00000000
