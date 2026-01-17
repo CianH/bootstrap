@@ -45,3 +45,12 @@ catch {
 
 # Set privacy settings
 # & $PSScriptRoot\privacy_settings.ps1
+
+# Install posh-git from PowerShell Gallery (for git tab completion)
+if (-not (Get-Module -ListAvailable -Name posh-git)) {
+	Write-Host "Installing posh-git from PowerShell Gallery..." -ForegroundColor Cyan
+	Install-Module posh-git -Scope CurrentUser -Force
+	Write-Host "posh-git installed successfully" -ForegroundColor Green
+} else {
+	Write-Host "posh-git already installed" -ForegroundColor Green
+}

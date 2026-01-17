@@ -1,2 +1,6 @@
-**/posh-git/
+# Ignore all PowerShell modules except CianTools
+win/powershell/Modules/*
+!win/powershell/Modules/CianTools/
+
+# GitHub Copilot instructions (auto-generated, machine-specific)
 **/.github/
