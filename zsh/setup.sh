@@ -8,6 +8,9 @@ set -e
 # Get the directory where this script lives (resolves symlinks)
 SCRIPT_DIR="${0:A:h}"
 
+# Ensure common paths are available (some environments have minimal default PATH)
+export PATH="/usr/local/bin:$PATH"
+
 echo "Bootstrap setup from: $SCRIPT_DIR"
 echo ""
 
