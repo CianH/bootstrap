@@ -172,7 +172,8 @@ function Get-CianTools {
 		'Media' = @(
 			@{ Name = 'Remove-MkvTitle'; Alias = ''; Description = 'Remove title metadata from MKV files' },
 			@{ Name = 'Remove-MkvTitlesInDirectory'; Alias = ''; Description = 'Remove titles from all MKVs in directory' },
-			@{ Name = 'Remove-MkvSubtitles'; Alias = ''; Description = 'Remove subtitle tracks from MKV files' }
+			@{ Name = 'Remove-MkvSubtitles'; Alias = ''; Description = 'Remove non-English subtitle tracks from MKV' },
+			@{ Name = 'Export-MkvSubtitles'; Alias = ''; Description = 'Extract subtitles to sidecar files (.srt, etc.)' }
 		)
 		'Utilities' = @(
 			@{ Name = 'ConvertTo-Binary'; Alias = ''; Description = 'Convert numbers to binary' },

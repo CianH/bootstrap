@@ -62,6 +62,7 @@
 		'Remove-MkvTitle',
 		'Remove-MkvTitlesInDirectory', 
 		'Remove-MkvSubtitles',
+		'Export-MkvSubtitles',
 		
 		# Configuration Functions
 		'Get-CianToolsConfig',
