@@ -45,6 +45,7 @@ if [[ ! -d ~/.zsh ]]; then
     echo "Creating ~/.zsh directory..."
     mkdir -p ~/.zsh
 fi
+chmod 700 ~/.zsh
 
 # ------------------------------
 # Install oh-my-zsh if missing
@@ -56,6 +57,7 @@ if [[ ! -d ~/.zsh/oh-my-zsh ]]; then
 else
     echo "  ✓ Already installed"
 fi
+find ~/.zsh/oh-my-zsh -type d -exec chmod 700 {} \;
 
 # ------------------------------
 # Install zsh-autosuggestions plugin if missing
