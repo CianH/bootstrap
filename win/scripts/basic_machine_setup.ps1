@@ -8,7 +8,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 # Setup Powershell symlinks
 $linkPath = "$env:USERPROFILE\Documents\WindowsPowerShell"
-$targetPath = $PSScriptRoot
+$targetPath = Join-Path $PSScriptRoot "..\powershell"
 
 try {
 	if (Test-Path $linkPath) {
@@ -24,7 +24,8 @@ catch {
 
 # Setup vimrc
 $vimrcLink = "$env:USERPROFILE\_vimrc"
-$vimrcTarget = "$((Get-Item $PSScriptRoot).parent.FullName)\.vimrc"
+$repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
+$vimrcTarget = Join-Path $repoRoot ".vimrc"
 
 try {
 	if (Test-Path $vimrcTarget) {
