@@ -3,6 +3,21 @@
 ##-------------------------------------------
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
 
+# Admin detection + window title
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+$Host.UI.RawUI.WindowTitle = "PowerShell $($PSVersionTable.PSVersion.Major)" + $(if ($isAdmin) { " [ADMIN]" })
+
+##-------------------------------------------
+## Navigation & Utilities
+##-------------------------------------------
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+function md5($file) { (Get-FileHash $file -Algorithm MD5).Hash }
+function sha256($file) { (Get-FileHash $file -Algorithm SHA256).Hash }
+function mkcd { param($dir) New-Item -ItemType Directory -Path $dir -Force | Out-Null; Set-Location $dir }
+function ll { Get-ChildItem -Force | Format-Table -AutoSize }
+function flushdns { Clear-DnsClientCache; Write-Host "DNS cache flushed" -ForegroundColor Green }
+
 ##-------------------------------------------
 ## Aliases
 ##-------------------------------------------
@@ -34,15 +49,24 @@ Import-Module (Join-Path $PSScriptRoot "Modules\CianTools") -Force -ErrorAction 
 Import-Module posh-git -ErrorAction SilentlyContinue
 
 ##-------------------------------------------
-## Key Remaps
+## PSReadLine Configuration
 ##-------------------------------------------
-# flip Up/Down and F8/Shift+F8
-Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
-Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
-Set-PSReadlineKeyHandler -Key F8 -Function PreviousHistory
-Set-PSReadlineKeyHandler -Key Shift+F8 -Function NextHistory
+Set-PSReadLineOption -BellStyle Visual
+Set-PSReadLineOption -HistoryNoDuplicates:$true
 
-##-------------------------------------------
-## Console State
-##-------------------------------------------
-Set-PSReadlineOption -BellStyle Visual
+# Key remaps - flip Up/Down and F8/Shift+F8
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadLineKeyHandler -Key F8 -Function PreviousHistory
+Set-PSReadLineKeyHandler -Key Shift+F8 -Function NextHistory
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+
+# PS7+ features: prediction and additional key handlers
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+	Set-PSReadLineOption -PredictionSource History
+	Set-PSReadLineOption -PredictionViewStyle ListView
+	Set-PSReadLineKeyHandler -Chord 'Ctrl+d' -Function DeleteChar
+	Set-PSReadLineKeyHandler -Chord 'Ctrl+w' -Function BackwardDeleteWord
+	Set-PSReadLineKeyHandler -Chord 'Ctrl+LeftArrow' -Function BackwardWord
+	Set-PSReadLineKeyHandler -Chord 'Ctrl+RightArrow' -Function ForwardWord
+}

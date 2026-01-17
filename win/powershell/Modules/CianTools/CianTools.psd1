@@ -50,7 +50,6 @@
 		'New-DirectoryLink',
 		'Backup-HostsFile',
 		'Restore-HostsFile',
-		'Invoke-Elevated',
 		'Block-Host',
 		'Stop-RazerServices',
 		
@@ -100,7 +99,6 @@
 		'mkdlink', 
 		'hostsb',
 		'hostsr',
-		'sudo',
 		'block',
 		
 		# Utilities aliases

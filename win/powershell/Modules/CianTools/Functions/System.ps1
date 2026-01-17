@@ -420,22 +420,10 @@ function Stop-RazerServices {
 	Write-Host "Razer service shutdown complete" -ForegroundColor Green
 }
 
-# Load the Invoke-Elevated function from the existing sudo.ps1 script
-# Read the existing sudo script and include it here
-$sudoScriptPath = Join-Path (Split-Path (Split-Path $PSScriptRoot)) "scripts\sudo.ps1"
-if (Test-Path $sudoScriptPath) {
-	. $sudoScriptPath
-	# Create alias for the function if it's named differently in the script
-	if (Get-Command Invoke-Elevated -ErrorAction SilentlyContinue) {
-		Set-Alias -Name sudo -Value Invoke-Elevated
-	}
-}
-
 # Create aliases for backward compatibility  
 Set-Alias -Name hosts -Value Edit-HostsFile
 Set-Alias -Name mklink -Value New-SymbolicLink
 Set-Alias -Name mkdlink -Value New-DirectoryLink
 Set-Alias -Name hostsb -Value Backup-HostsFile
 Set-Alias -Name hostsr -Value Restore-HostsFile
-# Update aliases section
 Set-Alias -Name block -Value Block-Host

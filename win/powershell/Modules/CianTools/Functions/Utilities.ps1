@@ -166,7 +166,6 @@ function Get-CianTools {
 			@{ Name = 'New-DirectoryLink'; Alias = 'mkdlink'; Description = 'Create directory symbolic links' },
 			@{ Name = 'Backup-HostsFile'; Alias = 'hostsb'; Description = 'Backup hosts file to OneDrive' },
 			@{ Name = 'Restore-HostsFile'; Alias = 'hostsr'; Description = 'Restore hosts file from backup' },
-			@{ Name = 'Invoke-Elevated'; Alias = 'sudo'; Description = 'Run commands with elevation' },
 			@{ Name = 'Block-Host'; Alias = 'block'; Description = 'Block hostnames via hosts file' },
 			@{ Name = 'Stop-RazerServices'; Alias = ''; Description = 'Stop Razer services in correct order' }
 		)
