@@ -1,11 +1,5 @@
-# ZSH configuration
-
-# ------------------------------
-# PATH
-# ------------------------------
-[[ -d $HOME/bin ]] && export PATH="$HOME/bin:$PATH"
-[[ -d $HOME/.local/bin ]] && export PATH="$HOME/.local/bin:$PATH"
-[[ -d /usr/local/sbin ]] && export PATH="/usr/local/sbin:$PATH"
+# ZSH configuration - interactive shell settings
+# (PATH and environment variables are in .zprofile)
 
 # ------------------------------
 # Oh My ZSH
@@ -50,7 +44,6 @@ setopt share_history         # Share history between all sessions
 # macOS specific
 # ------------------------------
 if [[ $OSTYPE = darwin* ]]; then
-  export HOMEBREW_NO_ANALYTICS=1
   alias brewup="brew outdated | xargs brew install"
   
   # Homebrew completions (must be before compinit)
@@ -65,12 +58,6 @@ fi
 zstyle :compinstall filename "$ZDOTDIR/.zshrc"
 autoload -Uz compinit
 compinit
-
-# ------------------------------
-# Environment
-# ------------------------------
-export EDITOR='vim'
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # ------------------------------
 # Local overrides (not in repo)

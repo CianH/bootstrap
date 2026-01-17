@@ -76,6 +76,7 @@ fi
 echo "Checking symlinks..."
 
 link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
+link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
 link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
 link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
 link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
