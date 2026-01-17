@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+; Explorer tweaks: show hidden files, show super hidden system files,
+; show file extensions, and open Explorer to "This PC" instead of Quick Access
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"Hidden"=dword:00000001
+"ShowSuperHidden"=dword:00000001
+"HideFileExt"=dword:00000000
+"LaunchTo"=dword:00000001

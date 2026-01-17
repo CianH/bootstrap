@@ -11,7 +11,10 @@ $regFiles = @(
     "DisableOnedriveAds.reg",
     "DisableSmartScreen.reg",
     "DisableTelemetry.reg",
-    "DisableTypingData.reg"
+    "DisableTypingData.reg",
+    "DisableUpdateP2P.reg",
+    "DisableWiFiSense.reg",
+    "ExplorerTweaks.reg"
 )
 
 foreach ($file in $regFiles) {

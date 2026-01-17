@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+; Disables WiFi Sense hotspot sharing and auto-connect to shared hotspots
+[HKEY_LOCAL_MACHINE\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting]
+"value"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots]
+"value"=dword:00000000

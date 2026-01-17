@@ -31,6 +31,15 @@ function SleepIfTask {
 }
 
 SleepIfTask
+
+# Telemetry/tracking services
+StopAndDisableService -Name "DiagTrack"
+StopAndDisableService -Name "diagnosticshub.standardcollector.service"
+StopAndDisableService -Name "dmwappushservice"
+StopAndDisableService -Name "RemoteRegistry"
+StopAndDisableService -Name "TrkWks"
+
+# Vendor bloat
 StopAndDisableService -Name "AsusUpdateCheck"
 StopProcessSilentlyAndForceFully -Name "WidgetService"
 StopProcessSilentlyAndForceFully -Name "Widgets"

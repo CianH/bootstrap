@@ -1,0 +1,5 @@
+Windows Registry Editor Version 5.00
+
+; Disables peer-to-peer Windows Update downloads outside local network
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config]
+"DODownloadMode"=dword:00000000
