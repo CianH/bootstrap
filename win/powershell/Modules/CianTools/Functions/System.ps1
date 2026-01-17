@@ -240,7 +240,7 @@ function Restore-HostsFile {
 	
 	.NOTES
 		Available via alias: hostsr
-		Requires administrator privileges. Consider wrapping with Invoke-Elevated (sudo).
+		Requires administrator privileges (use Windows 11 sudo or run as admin).
 	#>
 	[CmdletBinding(SupportsShouldProcess)]
 	param(
@@ -269,7 +269,7 @@ function Restore-HostsFile {
 		}
 		catch {
 			Write-Error "Failed to restore hosts file: $($_.Exception.Message)"
-			Write-Host "Note: This operation requires administrator privileges. Try: sudo { Restore-HostsFile }" -ForegroundColor Yellow
+			Write-Host "Note: This operation requires administrator privileges. Run as admin or use: sudo Restore-HostsFile" -ForegroundColor Yellow
 		}
 	}
 }
@@ -325,7 +325,7 @@ function Block-Host {
 	}
 	catch {
 		Write-Error "Failed to block host '$Hostname': $($_.Exception.Message)"
-		Write-Host "Note: This operation requires administrator privileges. Try: sudo { Block-Host '$Hostname' }" -ForegroundColor Yellow
+		Write-Host "Note: This operation requires administrator privileges. Run as admin or use: sudo Block-Host '$Hostname'" -ForegroundColor Yellow
 	}
 }
 
