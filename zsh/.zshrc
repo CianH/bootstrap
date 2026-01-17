@@ -24,6 +24,14 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # ------------------------------
+# Prompt customization
+# ------------------------------
+# Show hostname in prompt when in SSH session
+if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+  PROMPT='%F{green}%m%f:'$PROMPT
+fi
+
+# ------------------------------
 # Shell options
 # ------------------------------
 setopt extendedglob nomatch notify histignorespace
