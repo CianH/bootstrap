@@ -6,51 +6,107 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 	Break
 }
 
-# Setup Powershell symlinks
-$linkPath = "$env:USERPROFILE\Documents\WindowsPowerShell"
-$targetPath = Join-Path $PSScriptRoot "..\powershell"
+# Helper function to create/update symlinks safely
+function Set-SafeSymlink {
+	param(
+		[string]$LinkPath,
+		[string]$TargetPath,
+		[string]$Description
+	)
 
-try {
-	if (Test-Path $linkPath) {
-		Write-Warning "PowerShell profile directory already exists: $linkPath"
-	} else {
-		New-Item -ItemType SymbolicLink -Path $linkPath -Target $targetPath | Out-Null
-		Write-Host "Created PowerShell profile symlink: $linkPath -> $targetPath" -ForegroundColor Green
+	$resolvedTarget = (Resolve-Path $TargetPath -ErrorAction SilentlyContinue).Path
+	if (-not $resolvedTarget) {
+		Write-Error "$Description target not found: $TargetPath"
+		return $false
 	}
-}
-catch {
-	Write-Error "Failed to create PowerShell profile symlink: $($_.Exception.Message)"
-}
 
-# Setup vimrc
-$vimrcLink = "$env:USERPROFILE\_vimrc"
-$repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
-$vimrcTarget = Join-Path $repoRoot ".vimrc"
-
-try {
-	if (Test-Path $vimrcTarget) {
-		if (Test-Path $vimrcLink) {
-			Write-Warning "Vimrc link already exists: $vimrcLink"
+	if (Test-Path $LinkPath) {
+		$item = Get-Item $LinkPath -Force
+		
+		if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+			# It's a symlink - check if target exists
+			$currentTarget = $item.Target
+			if ($currentTarget -and (Test-Path $currentTarget)) {
+				# Normalize paths for comparison (resolve to full path, remove trailing slashes)
+				$normalizedCurrent = (Resolve-Path $currentTarget).Path.TrimEnd('\', '/')
+				$normalizedTarget = $resolvedTarget.TrimEnd('\', '/')
+				if ($normalizedCurrent -eq $normalizedTarget) {
+					Write-Host "  ✓ $Description (already linked correctly)" -ForegroundColor Green
+					return $true
+				}
+				# Target exists but points elsewhere - archive it
+				$oldPath = "$LinkPath.old"
+				if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
+				Copy-Item -Path $currentTarget -Destination $oldPath -Recurse -Force
+				Write-Host "  → $Description (archived old target to .old)" -ForegroundColor Yellow
+			} else {
+				Write-Host "  → $Description (removing broken symlink)" -ForegroundColor Yellow
+			}
+			Remove-Item $LinkPath -Force
 		} else {
-			New-Item -ItemType SymbolicLink -Path $vimrcLink -Target $vimrcTarget | Out-Null
-			Write-Host "Created vimrc symlink: $vimrcLink -> $vimrcTarget" -ForegroundColor Green
+			# It's a real file/folder - archive it
+			$oldPath = "$LinkPath.old"
+			if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
+			Move-Item -Path $LinkPath -Destination $oldPath -Force
+			Write-Host "  → $Description (archived existing to .old)" -ForegroundColor Yellow
 		}
-	} else {
-		Write-Warning "Vimrc target not found: $vimrcTarget"
+	}
+
+	try {
+		New-Item -ItemType SymbolicLink -Path $LinkPath -Target $resolvedTarget | Out-Null
+		Write-Host "  ✓ $Description (created)" -ForegroundColor Green
+		return $true
+	} catch {
+		Write-Error "  ✗ $Description failed: $($_.Exception.Message)"
+		return $false
 	}
 }
-catch {
-	Write-Error "Failed to create vimrc symlink: $($_.Exception.Message)"
+
+$repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
+
+# Setup symlinks
+Write-Host "`nChecking symlinks..." -ForegroundColor Cyan
+$powershellTarget = Join-Path $PSScriptRoot "..\powershell"
+
+$null = Set-SafeSymlink `
+	-LinkPath "$env:USERPROFILE\Documents\WindowsPowerShell" `
+	-TargetPath $powershellTarget `
+	-Description "WindowsPowerShell profile"
+
+$null = Set-SafeSymlink `
+	-LinkPath "$env:USERPROFILE\Documents\PowerShell" `
+	-TargetPath $powershellTarget `
+	-Description "PowerShell profile"
+
+# Windows Terminal symlink
+$terminalPackage = Get-ChildItem "$env:LOCALAPPDATA\Packages" -Filter "Microsoft.WindowsTerminal_*" -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($terminalPackage) {
+	$terminalSettingsLink = Join-Path $terminalPackage.FullName "LocalState\settings.json"
+	$terminalSettingsTarget = Join-Path $PSScriptRoot "..\terminal\settings.json"
+	
+	$null = Set-SafeSymlink `
+		-LinkPath $terminalSettingsLink `
+		-TargetPath $terminalSettingsTarget `
+		-Description "Windows Terminal settings"
+} else {
+	Write-Host "  ! Windows Terminal package not found" -ForegroundColor Yellow
 }
 
-# Set privacy settings
-# & $PSScriptRoot\privacy_settings.ps1
+# vimrc
+$null = Set-SafeSymlink `
+	-LinkPath "$env:USERPROFILE\_vimrc" `
+	-TargetPath (Join-Path $repoRoot ".vimrc") `
+	-Description "vimrc"
+
 
 # Install posh-git from PowerShell Gallery (for git tab completion)
+Write-Host "`nChecking posh-git..." -ForegroundColor Cyan
 if (-not (Get-Module -ListAvailable -Name posh-git)) {
-	Write-Host "Installing posh-git from PowerShell Gallery..." -ForegroundColor Cyan
+	Write-Host "  Installing from PowerShell Gallery..."
 	Install-Module posh-git -Scope CurrentUser -Force
-	Write-Host "posh-git installed successfully" -ForegroundColor Green
+	Write-Host "  ✓ Installed" -ForegroundColor Green
 } else {
-	Write-Host "posh-git already installed" -ForegroundColor Green
+	Write-Host "  ✓ Already installed" -ForegroundColor Green
 }
+
+Write-Host "`nSetup complete!" -ForegroundColor Green

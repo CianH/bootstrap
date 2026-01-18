@@ -14,9 +14,9 @@ export PATH="/usr/local/bin:$PATH"
 echo "Bootstrap setup from: $SCRIPT_DIR"
 echo ""
 
-# Helper: create symlink, backing up existing files
+# Helper: create symlink, backing up existing files/content
 link_file() {
-    local src="$1:A"  # Resolve to absolute path
+    local src="${1:A}"  # Resolve to absolute path
     local dest="$2"
     
     if [[ -L "$dest" ]]; then
@@ -24,17 +24,28 @@ link_file() {
         if [[ "$current" == "$src" ]]; then
             echo "  ✓ $dest (already linked)"
             return
-        else
-            echo "  → $dest (updating symlink)"
-            ln -sf "$src" "$dest"
         fi
+        # Symlink points elsewhere - check if target exists
+        if [[ -e "$dest" ]]; then
+            # Target exists, archive the content before replacing
+            echo "  → $dest (archiving old target to .old)"
+            [[ -e "$dest.old" ]] && rm -rf "$dest.old"
+            cp -rL "$dest" "$dest.old"
+        else
+            echo "  → $dest (removing broken symlink)"
+        fi
+        rm -f "$dest"
+        ln -s "$src" "$dest"
+        echo "  ✓ $dest (created)"
     elif [[ -e "$dest" ]]; then
         echo "  → $dest (backing up existing to .old)"
+        [[ -e "$dest.old" ]] && rm -rf "$dest.old"
         mv "$dest" "$dest.old"
         ln -s "$src" "$dest"
+        echo "  ✓ $dest (created)"
     else
-        echo "  → $dest (created)"
         ln -s "$src" "$dest"
+        echo "  ✓ $dest (created)"
     fi
 }
 
