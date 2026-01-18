@@ -632,6 +632,20 @@
                 "hidden": true,
                 "name": "Git Bash",
                 "source": "Git"
+            },
+            {
+                "commandline": "ssh nas",
+                "guid": "{a3d2e5f1-8c4b-4a9e-b6d7-1f2c3e4d5a6b}",
+                "hidden": false,
+                "icon": "\ud83d\udcbb",
+                "name": "SSH: NAS"
+            },
+            {
+                "commandline": "ssh mac-mini",
+                "guid": "{b4e3f6a2-9d5c-4b8f-c7e8-2a3d4f5b6c7d}",
+                "hidden": false,
+                "icon": "\ud83c\udf4e",
+                "name": "SSH: Mac Mini"
             }
         ]
     },
