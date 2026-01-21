@@ -15,8 +15,9 @@ The setup script installs oh-my-zsh, zsh-autosuggestions, and symlinks config fi
 
 ### Windows (PowerShell)
 
-Symlink the PowerShell directory to your Documents folder:
-
 ```powershell
-New-Item -ItemType SymbolicLink -Path "$HOME\Documents\PowerShell" -Target "C:\path\to\bootstrap\win\powershell"
+git clone https://github.com/CianH/bootstrap.git C:\dev\bootstrap
+C:\dev\bootstrap\win\scripts\basic_machine_setup.ps1
 ```
+
+The setup script installs posh-git and symlinks PowerShell profile, Windows Terminal settings, vimrc, and gitconfig.

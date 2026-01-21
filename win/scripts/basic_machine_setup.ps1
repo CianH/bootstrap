@@ -98,6 +98,22 @@ $null = Set-SafeSymlink `
 	-TargetPath (Join-Path $repoRoot ".vimrc") `
 	-Description "vimrc"
 
+# gitconfig
+$null = Set-SafeSymlink `
+	-LinkPath "$env:USERPROFILE\.gitconfig" `
+	-TargetPath (Join-Path $repoRoot ".gitconfig") `
+	-Description "gitconfig"
+
+# Create .gitconfig.local from template if it doesn't exist
+$gitconfigLocal = "$env:USERPROFILE\.gitconfig.local"
+if (-not (Test-Path $gitconfigLocal)) {
+	$templatePath = Join-Path $repoRoot ".gitconfig.local.template"
+	if (Test-Path $templatePath) {
+		Copy-Item $templatePath $gitconfigLocal
+		Write-Host "  → Created .gitconfig.local from template (edit with your details)" -ForegroundColor Yellow
+	}
+}
+
 
 # Install posh-git from PowerShell Gallery (for git tab completion)
 Write-Host "`nChecking posh-git..." -ForegroundColor Cyan
@@ -110,3 +126,4 @@ if (-not (Get-Module -ListAvailable -Name posh-git)) {
 }
 
 Write-Host "`nSetup complete!" -ForegroundColor Green
+Write-Host "Restart PowerShell or run: . `$PROFILE" -ForegroundColor Cyan
