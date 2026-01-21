@@ -196,70 +196,6 @@ function Compress-DirectoriesToArchive {
 	}
 }
 
-function Convert-DirectoriesToCBZ {
-	<#
-	.SYNOPSIS
-		Converts all directories to CBZ (Comic Book Zip) format.
-	
-	.DESCRIPTION
-		Creates a CBZ (zip) archive for each directory in the current location.
-		Optionally deletes the original directories after conversion.
-	
-	.PARAMETER DeleteOriginal
-		If specified, deletes the original directories after successful conversion.
-	
-	.PARAMETER Path
-		The directory to process. Defaults to current directory.
-	
-	.EXAMPLE
-		Convert-DirectoriesToCBZ
-		Creates CBZ files for all directories, keeping originals
-	
-	.EXAMPLE
-		dirs2cbz $true
-		Creates CBZ files and deletes original directories (using alias)
-	
-	.NOTES
-		Available via alias: dirs2cbz
-		Requires 7-Zip to be installed and available via 'sz' alias.
-	#>
-	[CmdletBinding(SupportsShouldProcess)]
-	param(
-		[switch]$DeleteOriginal,
-		
-		[Parameter(Position = 0)]
-		[string]$Path = (Get-Location)
-	)
-	
-	$directories = Get-ChildItem -Path $Path -Directory
-	
-	foreach ($dir in $directories) {
-		$cbzName = "$($dir.Name).cbz"
-		$cbzPath = Join-Path $Path $cbzName
-		
-		if ($PSCmdlet.ShouldProcess($dir.FullName, "Convert to $cbzName")) {
-			try {
-				# Use 7-Zip to create CBZ (zip format)
-				& sz a -tzip $cbzPath "$($dir.FullName)\*"
-				
-				if ($LASTEXITCODE -eq 0) {
-					Write-Host "Created CBZ: $cbzName" -ForegroundColor Green
-					
-					if ($DeleteOriginal -and $PSCmdlet.ShouldProcess($dir.FullName, "Delete original directory")) {
-						Remove-Item -Path $dir.FullName -Recurse -Force
-						Write-Host "Deleted original directory: $($dir.Name)" -ForegroundColor Yellow
-					}
-				} else {
-					Write-Error "Failed to create CBZ for: $($dir.Name)"
-				}
-			}
-			catch {
-				Write-Error "Error processing directory '$($dir.Name)': $($_.Exception.Message)"
-			}
-		}
-	}
-}
-
 function Find-Files {
 	<#
 	.SYNOPSIS
@@ -479,7 +415,6 @@ namespace Crc32
 # Create aliases for backward compatibility
 Set-Alias -Name touch -Value New-TouchFile
 Set-Alias -Name zipall -Value Compress-DirectoriesToArchive
-Set-Alias -Name dirs2cbz -Value Convert-DirectoriesToCBZ
 Set-Alias -Name find -Value Find-Files
 Set-Alias -Name fed -Value Invoke-ForEachDirectory
 Set-Alias -Name crc32 -Value Get-FileCrc32
