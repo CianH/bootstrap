@@ -1,0 +1,59 @@
+# Shared gitconfig - public, safe to commit
+# Machine-specific settings go in ~/.gitconfig.local
+
+[include]
+    path = ~/.gitconfig.local
+
+[core]
+    autocrlf = false
+    pager = cat
+
+[init]
+    defaultBranch = master
+
+[diff]
+    algorithm = histogram
+    colorMoved = zebra
+
+[merge]
+    conflictstyle = zdiff3
+
+[rerere]
+    enabled = true
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[fetch]
+    prune = true
+
+[rebase]
+    autoSquash = true
+    autoStash = true
+
+[branch]
+    sort = -committerdate
+
+[color]
+    ui = auto
+
+[status]
+    showBranch = true
+
+[log]
+    abbrevCommit = true
+
+[filter "lfs"]
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+
+[http]
+    lowSpeedLimit = 1000
+    lowSpeedTime = 60
+    postBuffer = 524288000

@@ -91,6 +91,13 @@ link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
 link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
 link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
 link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
+link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
+
+# Create .gitconfig.local from template if it doesn't exist
+if [[ ! -f ~/.gitconfig.local ]]; then
+    echo "  → Creating ~/.gitconfig.local from template (edit with your details)"
+    cp "$SCRIPT_DIR/../.gitconfig.local.template" ~/.gitconfig.local
+fi
 
 # ------------------------------
 # Done
