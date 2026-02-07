@@ -93,10 +93,50 @@ link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
 link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
 link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
 
-# Create .gitconfig.local from template if it doesn't exist
+# Create .gitconfig.local if it doesn't exist
 if [[ ! -f ~/.gitconfig.local ]]; then
-    echo "  → Creating ~/.gitconfig.local from template (edit with your details)"
-    cp "$SCRIPT_DIR/../.gitconfig.local.template" ~/.gitconfig.local
+    if [[ -f ~/.gitconfig.old ]]; then
+        # Extract machine-specific sections from the backup
+        echo "  → Generating ~/.gitconfig.local from previous .gitconfig"
+        echo "# Machine-specific gitconfig - DO NOT COMMIT" > ~/.gitconfig.local
+        echo "# Generated from previous .gitconfig during bootstrap setup" >> ~/.gitconfig.local
+        echo "" >> ~/.gitconfig.local
+        git --no-pager config --file ~/.gitconfig.old --get-regexp '^user\.' | while read -r key value; do
+            git config --file ~/.gitconfig.local "$key" "$value"
+        done
+        # Credential helpers use multi-valued keys (empty helper= to reset, then actual helper)
+        git --no-pager config --file ~/.gitconfig.old --get-regexp '^credential\.' | while read -r key value; do
+            git config --file ~/.gitconfig.local --add "$key" "$value"
+        done
+        echo "  ✓ ~/.gitconfig.local (migrated from backup)"
+    else
+        echo "  → Creating ~/.gitconfig.local from template (edit with your details)"
+        cp "$SCRIPT_DIR/../.gitconfig.local.template" ~/.gitconfig.local
+    fi
+fi
+
+# ------------------------------
+# Copilot CLI setup
+# ------------------------------
+REPO_ROOT="${SCRIPT_DIR:h}"
+DEV_ROOT="${REPO_ROOT:h}"
+
+echo "Checking Copilot CLI setup..."
+
+# Create ~/.copilot if needed
+if [[ ! -d ~/.copilot ]]; then
+    mkdir -p ~/.copilot
+    echo "  Created ~/.copilot/"
+fi
+
+# Copilot instructions
+link_file "$REPO_ROOT/ai/copilot-instructions.md" ~/.copilot/copilot-instructions.md
+
+# Memory (diary, reflections) - requires docs repo
+if [[ -d "$DEV_ROOT/docs/memory" ]]; then
+    link_file "$DEV_ROOT/docs/memory" ~/.copilot/memory
+else
+    echo "  ! Skipping memory symlink - docs repo not found at $DEV_ROOT/docs"
 fi
 
 # ------------------------------

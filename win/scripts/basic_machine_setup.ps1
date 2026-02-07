@@ -104,13 +104,39 @@ $null = Set-SafeSymlink `
 	-TargetPath (Join-Path $repoRoot ".gitconfig") `
 	-Description "gitconfig"
 
-# Create .gitconfig.local from template if it doesn't exist
+# Create .gitconfig.local if it doesn't exist
 $gitconfigLocal = "$env:USERPROFILE\.gitconfig.local"
 if (-not (Test-Path $gitconfigLocal)) {
-	$templatePath = Join-Path $repoRoot ".gitconfig.local.template"
-	if (Test-Path $templatePath) {
-		Copy-Item $templatePath $gitconfigLocal
-		Write-Host "  → Created .gitconfig.local from template (edit with your details)" -ForegroundColor Yellow
+	$gitconfigOld = "$env:USERPROFILE\.gitconfig.old"
+	if (Test-Path $gitconfigOld) {
+		# Extract machine-specific sections from the backup
+		Write-Host "  → Generating .gitconfig.local from previous .gitconfig" -ForegroundColor Yellow
+		"# Machine-specific gitconfig - DO NOT COMMIT" | Set-Content $gitconfigLocal
+		"# Generated from previous .gitconfig during bootstrap setup" | Add-Content $gitconfigLocal
+		"" | Add-Content $gitconfigLocal
+		$userEntries = git --no-pager config --file $gitconfigOld --get-regexp '^user\.' 2>$null
+		if ($userEntries) {
+			$userEntries | ForEach-Object {
+				$parts = $_ -split ' ', 2
+				git config --file $gitconfigLocal $parts[0] $parts[1]
+			}
+		}
+		# Credential helpers use multi-valued keys (empty helper= to reset, then actual helper)
+		$credEntries = git --no-pager config --file $gitconfigOld --get-regexp '^credential\.' 2>$null
+		if ($credEntries) {
+			$credEntries | ForEach-Object {
+				$parts = $_ -split ' ', 2
+				$value = if ($parts.Length -gt 1) { $parts[1] } else { "" }
+				git config --file $gitconfigLocal --add $parts[0] $value
+			}
+		}
+		Write-Host "  ✓ .gitconfig.local (migrated from backup)" -ForegroundColor Green
+	} else {
+		$templatePath = Join-Path $repoRoot ".gitconfig.local.template"
+		if (Test-Path $templatePath) {
+			Copy-Item $templatePath $gitconfigLocal
+			Write-Host "  → Created .gitconfig.local from template (edit with your details)" -ForegroundColor Yellow
+		}
 	}
 }
 
@@ -123,6 +149,37 @@ if (-not (Get-Module -ListAvailable -Name posh-git)) {
 	Write-Host "  ✓ Installed" -ForegroundColor Green
 } else {
 	Write-Host "  ✓ Already installed" -ForegroundColor Green
+}
+
+# ------------------------------
+# Copilot CLI setup
+# ------------------------------
+$devRoot = (Get-Item $repoRoot).Parent.FullName
+
+Write-Host "`nChecking Copilot CLI setup..." -ForegroundColor Cyan
+
+# Create ~/.copilot if needed
+$copilotDir = "$env:USERPROFILE\.copilot"
+if (-not (Test-Path $copilotDir)) {
+	New-Item -ItemType Directory -Path $copilotDir | Out-Null
+	Write-Host "  Created $copilotDir"
+}
+
+# Copilot instructions
+$null = Set-SafeSymlink `
+	-LinkPath "$copilotDir\copilot-instructions.md" `
+	-TargetPath (Join-Path $repoRoot "ai\copilot-instructions.md") `
+	-Description "Copilot instructions"
+
+# Memory (diary, reflections) - requires docs repo
+$docsMemory = Join-Path $devRoot "docs\memory"
+if (Test-Path $docsMemory) {
+	$null = Set-SafeSymlink `
+		-LinkPath "$copilotDir\memory" `
+		-TargetPath $docsMemory `
+		-Description "Copilot memory"
+} else {
+	Write-Host "  ! Skipping memory symlink - docs repo not found at $devRoot\docs" -ForegroundColor Yellow
 }
 
 Write-Host "`nSetup complete!" -ForegroundColor Green
