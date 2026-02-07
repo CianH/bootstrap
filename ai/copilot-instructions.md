@@ -1,21 +1,37 @@
-# Learnings
+# Learnings (Confirmed)
+<!-- 3+ weighted occurrences, actively useful -->
 
-- Windows symlinks/junctions must be created from Windows, not WSL. WSL symlinks appear valid but Windows apps cannot follow them.
+- Windows symlinks/junctions must be created from Windows, not WSL. WSL symlinks appear valid but Windows apps cannot follow them. <!-- added:2026-01-15 cited:2 -->
+- When writing skills, see `scripts/ai/skills/AUTHORING.md`. <!-- added:2026-02-04 cited:2 -->
+- Don't over-engineer evolving systems. AI tooling changes weekly—keep friction low or the system won't get used. <!-- added:2026-02-05 cited:4 -->
+
+# Learnings (Tentative)
+<!-- 2+ weighted occurrences, monitoring for confirmation -->
+
+- Use local `date` command for timestamps in diary entries, not the UTC `current_datetime` from system prompt. <!-- added:2026-02-06 cited:2 source:diary-2026-02-02-s2,diary-2026-02-03-s1 -->
+- Archive or delete stale docs — don't let them rot with outdated information. <!-- added:2026-02-06 cited:3 source:diary-2026-02-04-s1,diary-2026-02-05-s2,decisions -->
+
+
+# Learnings (Archived)
+<!-- Moved here by prune skill, keep for reference -->
 
 # Output Formatting
 
-When presenting data from skills/tools:
+- **Single items**: prose, not tables
+- **Lists/rankings**: numbered with key stats (`1. **Item** - 500 plays`)
+- **Yes/no questions**: answer directly first, then details
+- **Gap/missing analysis**: summary first, then list
+- **Tables**: only for complex multi-column comparisons
 
-- **Single items** (now playing, artist info): Use natural prose, not tables
-  - ✓ `🎵 *Track* by **Artist** from *Album* - 55% through`
-  - ✗ Tables for one item
-- **Lists/rankings** (top artists, search results): Numbered lists with key stats
-  - `1. **The Beatles** - 9,909 plays`
-- **Yes/no questions** (do I own X?): Answer directly first, then details
-  - `Yes, you have **Radiohead** - 10 albums: OK Computer, Kid A...`
-- **Missing/gap analysis**: Summary first, then list
-  - `Missing 3 studio albums from **Artist**:` followed by list
-- **Summaries**: Conversational, highlight interesting stats
-  - `You've scrobbled 216K tracks over 21 years since 2004!`
+# Session Reflection
 
-Keep responses conversational. Tables only for complex comparisons.
+At end of significant sessions, consider:
+1. What patterns emerged that should become instructions?
+2. What notes should be written to docs/notes/?
+3. What existing docs need updates?
+
+See docs/notes/ai-memory-workflow.md for the full workflow.
+
+# Machine-Specific
+
+- **Disk space:** This Mac has limited space. Check `df -h ~` before large operations. Plex transcoding often fills disk.
