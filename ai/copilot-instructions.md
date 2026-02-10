@@ -1,3 +1,7 @@
+# Rules
+
+- Never "remember" or "note" something without writing it to a persistent file. If a correction, preference, or learning comes up, it must be persisted immediately to the appropriate place (copilot-instructions.md, a SKILL.md, or docs/notes/) — not just acknowledged in conversation. Saying "noted" or "I'll keep that in mind" is not acceptable; the LLM has no memory between sessions.
+
 # Learnings (Confirmed)
 <!-- 3+ weighted occurrences, actively useful -->
 
