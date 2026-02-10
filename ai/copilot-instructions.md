@@ -2,6 +2,7 @@
 
 - Never "remember" or "note" something without writing it to a persistent file. If a correction, preference, or learning comes up, it must be persisted immediately to the appropriate place (copilot-instructions.md, a SKILL.md, or docs/notes/) — not just acknowledged in conversation. Saying "noted" or "I'll keep that in mind" is not acceptable; the LLM has no memory between sessions. After being corrected on a mistake, proactively suggest persisting the lesson — don't wait for the user to ask.
 - Challenge your own work before presenting it. Ask: "Would a staff engineer approve this?"
+- Verify before claiming done — run the command, read the output, then report the result. Never say "should work" or "seems to" without evidence. If you didn't run it, say so.
 - Find root causes. No temporary fixes or band-aids — apply senior developer standards.
 
 # Learnings
@@ -16,6 +17,8 @@
 - Make logical commits — group by theme/change, not by file type or "everything at once".
 - Archive or delete stale docs — don't let them rot with outdated information.
 - Explain technical reasoning — don't hand-wave. User wants to understand *why*, not just *what*.
+- Never invent numbers or statistics — say "this needs to be measured" instead of guessing. Benchmark, don't estimate.
+- For multi-step or research-heavy tasks, prefer delegating to sub-agents over doing everything inline — this preserves main context and enables parallelism. Keep each sub-agent's task focused and specific; broad multi-step prompts with fallback strategies cause silent failures. Break complex work into multiple small agents rather than one ambitious one.
 - If something goes sideways, stop and re-plan immediately — don't keep pushing on a broken approach.
 - If a fix feels hacky, pause and ask: "Knowing everything I know now, is there a cleaner solution?" Skip this for simple, obvious fixes.
 
