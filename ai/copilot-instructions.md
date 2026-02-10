@@ -11,7 +11,7 @@
 - "Give me a CSV" means inline comma-separated values (e.g. `val1,val2,val3`), not a table, not newline-separated, not a file. <!-- added:2026-02-08 cited:1 source:explicit -->
 - Amend, don't stack fix commits. When a mistake is immediately corrected, squash into the prior commit (`git commit --amend` or `git reset --soft HEAD~N && commit`). <!-- added:2026-02-08 cited:1 source:explicit -->
 - Never use `git add -A` — always stage specific files explicitly. <!-- added:2026-02-08 cited:1 source:explicit -->
-- Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code (`fix:`/`feat:`), not `docs:`. <!-- added:2026-02-08 cited:1 source:explicit -->
+- Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code changes — NEVER use `docs:` or `chore:`. Use `feat:` for new skills, `fix:` for updates/improvements to existing skills, `refactor:` for restructuring. Examples: ✅ `feat: add trakt skill`, ✅ `fix: update diary skill template`, ❌ `chore: update diary skill`, ❌ `docs: update diary skill`. <!-- added:2026-02-08 cited:3 source:explicit -->
 - Make logical commits — group by theme/change, not by file type or "everything at once". <!-- added:2026-02-08 cited:1 source:explicit -->
 
 # Learnings (Tentative)
