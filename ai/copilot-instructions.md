@@ -18,6 +18,7 @@
 - Archive or delete stale docs — don't let them rot with outdated information.
 - Explain technical reasoning — don't hand-wave. User wants to understand *why*, not just *what*.
 - Never invent numbers or statistics — say "this needs to be measured" instead of guessing. Benchmark, don't estimate.
+- Never answer data questions from memory or reasoning alone — always re-read the actual output. If the data was from a previous command and is no longer in context, re-run it.
 - For multi-step or research-heavy tasks, prefer delegating to sub-agents over doing everything inline — this preserves main context and enables parallelism. Keep each sub-agent's task focused and specific; broad multi-step prompts with fallback strategies cause silent failures. Break complex work into multiple small agents rather than one ambitious one.
 - If something goes sideways, stop and re-plan immediately — don't keep pushing on a broken approach.
 - If a fix feels hacky, pause and ask: "Knowing everything I know now, is there a cleaner solution?" Skip this for simple, obvious fixes.
