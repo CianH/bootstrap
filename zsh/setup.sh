@@ -2,11 +2,21 @@
 # Bootstrap setup script for ZSH environments
 # Works on: macOS, Linux, WSL
 # Safe to re-run - checks state before making changes
+#
+# Usage:
+#   ./setup.sh              # Normal setup (clones plugins if missing)
+#   ./setup.sh --local      # Skip network operations (symlinks only)
 
 set -e
 
 # Get the directory where this script lives (resolves symlinks)
 SCRIPT_DIR="${0:A:h}"
+LOCAL_MODE=false
+
+# Parse arguments
+if [[ "$1" == "--local" ]]; then
+    LOCAL_MODE=true
+fi
 
 # Ensure common paths are available (some environments have minimal default PATH)
 export PATH="/usr/local/bin:$PATH"
@@ -63,20 +73,28 @@ chmod 700 ~/.zsh
 # ------------------------------
 echo "Checking oh-my-zsh..."
 if [[ ! -d ~/.zsh/oh-my-zsh ]]; then
-    echo "  Installing oh-my-zsh..."
-    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ~/.zsh/oh-my-zsh
+    if [[ "$LOCAL_MODE" == true ]]; then
+        echo "  ! Skipping oh-my-zsh install (--local mode)"
+    else
+        echo "  Installing oh-my-zsh..."
+        git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ~/.zsh/oh-my-zsh
+    fi
 else
     echo "  ✓ Already installed"
 fi
-find ~/.zsh/oh-my-zsh -type d -exec chmod 700 {} \;
+[[ -d ~/.zsh/oh-my-zsh ]] && find ~/.zsh/oh-my-zsh -type d -exec chmod 700 {} \;
 
 # ------------------------------
 # Install zsh-autosuggestions plugin if missing
 # ------------------------------
 echo "Checking zsh-autosuggestions..."
 if [[ ! -d ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
-    echo "  Installing zsh-autosuggestions..."
-    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions
+    if [[ "$LOCAL_MODE" == true ]]; then
+        echo "  ! Skipping zsh-autosuggestions install (--local mode)"
+    else
+        echo "  Installing zsh-autosuggestions..."
+        git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions
+    fi
 else
     echo "  ✓ Already installed"
 fi
