@@ -13,7 +13,7 @@
 - "Give me a CSV" means inline comma-separated values (e.g. `val1,val2,val3`), not a table, not newline-separated, not a file.
 - Amend, don't stack fix commits. When a mistake is immediately corrected, squash into the prior commit (`git commit --amend` or `git reset --soft HEAD~N && commit`).
 - Never use `git add -A` — always stage specific files explicitly.
-- Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code changes — NEVER use `docs:` or `chore:`. Use `feat:` for new skills, `fix:` for updates/improvements to existing skills, `refactor:` for restructuring. Examples: ✅ `feat: add trakt skill`, ✅ `fix: update diary skill template`, ❌ `chore: update diary skill`, ❌ `docs: update diary skill`.
+- Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code changes — NEVER use `docs:` or `chore:`. Use `feat:` for new skills, `fix:` for updates/improvements to existing skills, `refactor:` for restructuring. Examples: ✅ `feat: add trakt skill`, ✅ `fix: update diary skill template`, ❌ `chore: update diary skill`, ❌ `docs: update diary skill`. Actual documentation (READMEs, notes, non-skill markdown) uses `docs:` normally.
 - Make logical commits — group by theme/change, not by file type or "everything at once".
 - Archive or delete stale docs — don't let them rot with outdated information.
 - Explain technical reasoning — don't hand-wave. User wants to understand *why*, not just *what*.
