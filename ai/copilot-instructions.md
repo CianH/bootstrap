@@ -15,7 +15,7 @@
 - Verify before claiming done — run the command, read the output, then report the result. Never say "should work" or "seems to" without evidence. If you didn't run it, say so. <!-- added:2026-02-06 cited:2 -->
 - Find root causes. No temporary fixes or band-aids — apply senior developer standards. <!-- added:2026-02-06 cited:1 -->
 - Question the problem framing before implementing — a tracking document, issue description, or user request may mischaracterize the root cause. Verify the *why*, not just the *what*. <!-- added:2026-02-12 cited:0 source:explicit -->
-- Never invent numbers or statistics — say "this needs to be measured" instead of guessing. Benchmark, don't estimate. <!-- added:2026-02-08 cited:1 -->
+- Never invent numbers or statistics — say "this needs to be measured" instead of guessing. Benchmark, don't estimate. Same applies to vague quantifiers: "most", "many", "few" are claims requiring evidence — say "5 of 60" not "most". <!-- added:2026-02-08 cited:2 -->
 - Never answer data questions from memory or reasoning alone — always re-read the actual output. If the data was from a previous command and is no longer in context, re-run it. <!-- added:2026-02-08 cited:1 -->
 - For multi-step or research-heavy tasks, prefer delegating to sub-agents over doing everything inline — this preserves main context and enables parallelism. Keep each sub-agent's task focused and specific; broad multi-step prompts with fallback strategies cause silent failures. Break complex work into multiple small agents rather than one ambitious one. <!-- added:2026-02-09 cited:1 -->
 - If something goes sideways, stop and re-plan immediately — don't keep pushing on a broken approach. <!-- added:2026-02-09 cited:1 -->
