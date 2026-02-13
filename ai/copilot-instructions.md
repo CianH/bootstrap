@@ -26,6 +26,7 @@
 - When user says "I don't need X", delete X entirely — don't repackage or reword it. <!-- added:2026-02-12 cited:0 source:explicit -->
 - When user corrects you, apply it fully and immediately — don't half-apply. <!-- added:2026-02-12 cited:0 source:explicit -->
 - Don't add features the user didn't ask for. <!-- added:2026-02-12 cited:0 source:explicit -->
+- When user says "show me a draft" or similar, do NOT create files, directories, or make changes until explicitly told to proceed. Present the draft as text in conversation only. <!-- added:2026-02-13 cited:0 source:explicit -->
 - Archive or delete stale docs — don't let them rot with outdated information. <!-- added:2026-02-06 cited:1 -->
 - "Give me a CSV" means inline comma-separated values (e.g. `val1,val2,val3`), not a table, not newline-separated, not a file. <!-- added:2026-02-08 cited:1 source:explicit -->
 
