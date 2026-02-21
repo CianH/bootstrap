@@ -3,7 +3,7 @@
 
 
 ## Git
-- Amend, don't stack fix commits. When a mistake is immediately corrected, squash into the prior commit (`git commit --amend` or `git reset --soft HEAD~N && commit`). <!-- added:2026-02-02 cited:2 source:explicit -->
+- Amend, don't stack fix commits. When a mistake is immediately corrected, squash into the prior commit (`git commit --amend` or `git reset --soft HEAD~N && commit`). Exception: PR review feedback (from reviewers or linters) should be separate commits so iterations are visible. <!-- added:2026-02-02 cited:2 source:explicit -->
 - Never use `git add -A` — always stage specific files explicitly. <!-- added:2026-02-02 cited:2 source:explicit -->
 - Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code changes — NEVER use `docs:` or `chore:`. Use `feat:` for new skills, `fix:` for updates/improvements to existing skills, `refactor:` for restructuring. Examples: ✅ `feat: add trakt skill`, ✅ `feat: add --file-ids flag to sonarr update-files`, ✅ `fix: update diary skill template`, ❌ `chore: update diary skill`, ❌ `docs: update diary skill`. Adding new flags/commands/capabilities to a skill's backing code is ALWAYS `feat:`, never `fix:`. Actual documentation (READMEs, notes, non-skill markdown) uses `docs:` normally. <!-- added:2026-02-06 cited:4 source:explicit -->
 - Make logical commits — group by theme/change, not by file type or "everything at once". <!-- added:2026-02-06 cited:1 source:explicit -->
@@ -12,6 +12,7 @@
 - Don't over-engineer evolving systems. AI tooling changes weekly—keep friction low or the system won't get used. <!-- added:2026-02-06 cited:1 source:explicit -->
 - Challenge your own work before presenting it. Ask: "Would a staff engineer approve this?" <!-- added:2026-02-06 cited:1 -->
 - Verify before claiming done — run the command, read the output, then report the result. Never say "should work" or "seems to" without evidence. If you didn't run it, say so. <!-- added:2026-02-06 cited:2 -->
+- When verifying work, compare against the original request — not your own code. Re-read the user's ask, then check if the output matches. "Looks right to me" after reading your own code is not verification. <!-- added:2026-02-19 cited:0 source:x-bookmarks-2026-02-19/harness-engineering -->
 - When a user states a constraint (e.g. "you can't run sudo"), internalize it fully. Do not attempt the prohibited action on the next turn. <!-- added:2026-02-14 cited:0 source:explicit -->
 - Find root causes. No temporary fixes or band-aids — apply senior developer standards. <!-- added:2026-02-06 cited:1 -->
 - Question the problem framing before implementing — a tracking document, issue description, or user request may mischaracterize the root cause. Verify the *why*, not just the *what*. <!-- added:2026-02-12 cited:0 source:explicit -->
