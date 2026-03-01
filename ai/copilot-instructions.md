@@ -47,6 +47,7 @@
 ## Tools
 - When writing skills, see `scripts/ai/skills/AUTHORING.md`. <!-- added:2026-02-02 cited:3 -->
 - When `web_fetch` truncates content (hits `max_length`) or loses fidelity (strips code blocks, images, structure), fall back to `curl` with `-H "Accept: text/markdown"`. Cloudflare-fronted sites will return clean server-converted markdown with ~80-94% fewer tokens than raw HTML. The response includes an `x-markdown-tokens` header for token budgeting before reading the body. <!-- added:2026-02-14 cited:0 source:explicit -->
+- Before calling any skill CLI, read its SKILL.md to confirm the exact command name and arguments. Never guess CLI syntax — the SKILL.md exists precisely to prevent that. If a command fails, re-read SKILL.md before retrying. <!-- added:2026-03-01 cited:0 source:explicit -->
 
 ## Session Reflection
 
