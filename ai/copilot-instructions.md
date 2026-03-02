@@ -3,7 +3,7 @@
 
 
 ## Git
-- Amend, don't stack fix commits. When a mistake is immediately corrected, squash into the prior commit (`git commit --amend` or `git reset --soft HEAD~N && commit`). Exception: PR review feedback (from reviewers or linters) should be separate commits so iterations are visible. <!-- added:2026-02-02 cited:2 source:explicit -->
+- Amend only the HEAD commit, and only when fixing a mistake introduced in that same commit. Never amend older commits or unrelated commits — make a new commit instead. Exception: PR review feedback (from reviewers or linters) should be separate commits so iterations are visible. <!-- added:2026-02-02 cited:3 source:explicit -->
 - Never use `git add -A` — always stage specific files explicitly. <!-- added:2026-02-02 cited:2 source:explicit -->
 - Use conventional commits (https://www.conventionalcommits.org). SKILL.md files are code changes — NEVER use `docs:` or `chore:`. Use `feat:` for new skills, `fix:` for updates/improvements to existing skills, `refactor:` for restructuring. Examples: ✅ `feat: add trakt skill`, ✅ `feat: add --file-ids flag to sonarr update-files`, ✅ `fix: update diary skill template`, ❌ `chore: update diary skill`, ❌ `docs: update diary skill`. Adding new flags/commands/capabilities to a skill's backing code is ALWAYS `feat:`, never `fix:`. Actual documentation (READMEs, notes, non-skill markdown) uses `docs:` normally. <!-- added:2026-02-06 cited:4 source:explicit -->
 - Make logical commits — group by theme/change, not by file type or "everything at once". <!-- added:2026-02-06 cited:1 source:explicit -->
