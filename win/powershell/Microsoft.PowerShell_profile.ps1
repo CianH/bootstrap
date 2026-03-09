@@ -2,6 +2,7 @@
 ## Environment Settings
 ##-------------------------------------------
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
+$env:NEXT_TELEMETRY_DISABLED = 1  # https://nextjs.org/telemetry
 
 # Admin detection + window title
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
