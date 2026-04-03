@@ -34,7 +34,7 @@ fi
 # ------------------------------
 # Shell options
 # ------------------------------
-setopt extendedglob nomatch notify histignorespace
+setopt extendedglob nomatch notify histignorespace globdots
 unsetopt autocd beep
 bindkey -e
 
