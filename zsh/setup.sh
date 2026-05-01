@@ -134,6 +134,22 @@ if [[ ! -f ~/.gitconfig.local ]]; then
 fi
 
 # ------------------------------
+# Wire up global git hooks
+# ------------------------------
+# core.hooksPath needs an absolute filesystem path, which depends on where
+# this bootstrap repo was cloned. Writing it to ~/.gitconfig.local (per-machine,
+# gitignored) keeps the path out of the shared, committed .gitconfig.
+HOOKS_DIR="${SCRIPT_DIR:h}/git/hooks"
+if [[ -d "$HOOKS_DIR" ]]; then
+    current_hooks_path=$(git config --file ~/.gitconfig.local --get core.hooksPath 2>/dev/null || true)
+    if [[ "$current_hooks_path" != "$HOOKS_DIR" ]]; then
+        echo "  → Setting core.hooksPath = $HOOKS_DIR in ~/.gitconfig.local"
+        git config --file ~/.gitconfig.local core.hooksPath "$HOOKS_DIR"
+    fi
+    echo "  ✓ Global git hooks ($HOOKS_DIR)"
+fi
+
+# ------------------------------
 # Copilot CLI setup
 # ------------------------------
 REPO_ROOT="${SCRIPT_DIR:h}"

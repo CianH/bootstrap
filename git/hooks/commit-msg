@@ -1,0 +1,69 @@
+#!/bin/sh
+# commit-msg hook: reject mid-sentence hard-wrapped commit message bodies.
+#
+# Detects the "wrapped at 72 chars" antipattern by looking for adjacent body
+# lines where the first line is suspiciously short and the next line begins
+# with a lowercase letter (sentence continuation).
+#
+# Subject line, blank lines, list items (-, *, +, 1.), block quotes (>),
+# headings (#), tables (|), and trailers (Foo-Bar: value) are all skipped.
+#
+# Bypass with: git commit --no-verify
+#
+# Exit 0 = accept, exit 1 = reject.
+
+set -eu
+
+msgfile="$1"
+
+awk '
+function is_structural(line) {
+    # Lists, blockquotes, headings, tables, indented code (4+ spaces or tab)
+    if (line ~ /^[[:space:]]*([-*+>#|]|[0-9]+\.)/) return 1
+    if (line ~ /^(    |\t)/) return 1
+    # Conventional trailers: "Word-Word:" or "Word:" followed by space at start
+    if (line ~ /^[A-Z][A-Za-z0-9_-]*:[[:space:]]/) return 1
+    return 0
+}
+
+function is_blank(line) {
+    return line ~ /^[[:space:]]*$/
+}
+
+{
+    lineno++
+
+    # Strip git scissors/comment lines
+    if (substr($0, 1, 1) == "#") next
+
+    if (lineno == 1) { prev = ""; next }    # skip subject
+    if (lineno == 2) { prev = $0; next }    # first body line, nothing to compare yet
+
+    curr = $0
+
+    if (is_blank(prev) || is_blank(curr)) { prev = curr; next }
+    if (is_structural(prev) || is_structural(curr)) { prev = curr; next }
+
+    prev_len = length(prev)
+    first_char = substr(curr, 1, 1)
+
+    # Hard-wrap fingerprint: short prev line whose next line continues with lowercase.
+    # The 79-char threshold catches the common 65/72/76 wrap zones without
+    # imposing a maximum line length on long flowing prose.
+    if (prev_len > 0 && prev_len < 80 && first_char ~ /[a-z]/) {
+        printf "  line %d (%d chars): %s\n", lineno-1, prev_len, prev > "/dev/stderr"
+        printf "  line %d (continues): %s\n", lineno, curr > "/dev/stderr"
+        printf "\n" > "/dev/stderr"
+        fail = 1
+    }
+    prev = curr
+}
+END {
+    if (fail) {
+        print "commit-msg: rejected — body looks hard-wrapped at ~72 chars." > "/dev/stderr"
+        print "Write flowing paragraphs without manual line breaks." > "/dev/stderr"
+        print "Bypass with: git commit --no-verify" > "/dev/stderr"
+        exit 1
+    }
+}
+' "$msgfile"
