@@ -17,7 +17,6 @@ zstyle ':omz:update' verbosity silent
 plugins=(
   git
   sudo
-  dirhistory
   zsh-autosuggestions
 )
 
