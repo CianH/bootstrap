@@ -1,12 +1,24 @@
 #!/bin/sh
-# commit-msg hook: reject mid-sentence hard-wrapped commit message bodies.
+# commit-msg hook: reject any commit message paragraph that contains an
+# internal line break.
 #
-# Detects the "wrapped at 72 chars" antipattern by looking for adjacent body
-# lines where the first line is suspiciously short and the next line begins
-# with a lowercase letter (sentence continuation).
+# A "paragraph" is a run of consecutive prose lines (non-blank, non-structural).
+# If a paragraph has two or more such lines, the second one is an internal
+# line break and the message is rejected — regardless of line length or
+# whether the continuation starts uppercase or lowercase. This catches both
+# the classic 72-char wrap and sentence-per-line layouts.
 #
-# Subject line, blank lines, list items (-, *, +, 1.), block quotes (>),
-# headings (#), tables (|), and trailers (Foo-Bar: value) are all skipped.
+# Skipped (allowed to span multiple lines without flagging):
+#   - subject line (line 1)
+#   - blank lines
+#   - list items (-, *, +, 1.)
+#   - blockquotes (>)
+#   - headings (#)
+#   - tables (|)
+#   - indented code (4+ spaces or tab)
+#   - fenced code blocks (``` ... ```)
+#   - trailers (Foo-Bar: value)
+#   - git comment lines (#)
 #
 # Bypass with: git commit --no-verify
 #
@@ -33,35 +45,43 @@ function is_blank(line) {
 {
     lineno++
 
-    # Strip git scissors/comment lines
+    # Strip git scissors/comment lines (do not advance paragraph state)
     if (substr($0, 1, 1) == "#") next
 
-    if (lineno == 1) { prev = ""; next }    # skip subject
-    if (lineno == 2) { prev = $0; next }    # first body line, nothing to compare yet
+    # Toggle fenced code block state; lines inside a fence are exempt
+    if ($0 ~ /^```/) {
+        in_fence = !in_fence
+        in_paragraph = 0
+        next
+    }
+    if (in_fence) { in_paragraph = 0; next }
 
-    curr = $0
+    # Skip subject line
+    if (lineno == 1) { in_paragraph = 0; next }
 
-    if (is_blank(prev) || is_blank(curr)) { prev = curr; next }
-    if (is_structural(prev) || is_structural(curr)) { prev = curr; next }
+    # Blank or structural lines end any current paragraph
+    if (is_blank($0) || is_structural($0)) {
+        in_paragraph = 0
+        next
+    }
 
-    prev_len = length(prev)
-    first_char = substr(curr, 1, 1)
-
-    # Hard-wrap fingerprint: short prev line whose next line continues with lowercase.
-    # The 79-char threshold catches the common 65/72/76 wrap zones without
-    # imposing a maximum line length on long flowing prose.
-    if (prev_len > 0 && prev_len < 80 && first_char ~ /[a-z]/) {
-        printf "  line %d (%d chars): %s\n", lineno-1, prev_len, prev > "/dev/stderr"
-        printf "  line %d (continues): %s\n", lineno, curr > "/dev/stderr"
+    # Prose line. If we are already inside a paragraph, this is an internal
+    # line break and the rule is violated.
+    if (in_paragraph) {
+        printf "  line %d: %s\n", prev_lineno, prev_line > "/dev/stderr"
+        printf "  line %d: %s\n", lineno, $0 > "/dev/stderr"
         printf "\n" > "/dev/stderr"
         fail = 1
     }
-    prev = curr
+    in_paragraph = 1
+    prev_line = $0
+    prev_lineno = lineno
 }
 END {
     if (fail) {
-        print "commit-msg: rejected — body looks hard-wrapped at ~72 chars." > "/dev/stderr"
-        print "Write flowing paragraphs without manual line breaks." > "/dev/stderr"
+        print "commit-msg: rejected — paragraph contains an internal line break." > "/dev/stderr"
+        print "Each paragraph must be a single unwrapped line. Line breaks belong only" > "/dev/stderr"
+        print "between paragraphs, in lists/quotes/tables, or in trailers." > "/dev/stderr"
         print "Bypass with: git commit --no-verify" > "/dev/stderr"
         exit 1
     }
