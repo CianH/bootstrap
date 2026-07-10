@@ -89,7 +89,7 @@ function Set-CianToolsConfig {
 		
 		$configContent = "@{`n"
 		foreach ($key in $userConfig.Keys) {
-			$value = $userConfig[$key]
+			$value = ([string]$userConfig[$key]).Replace("'", "''")
 			$configContent += "`t$key = '$value'`n"
 		}
 		$configContent += "}"

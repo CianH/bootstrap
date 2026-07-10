@@ -135,7 +135,7 @@ function Get-CianTools {
 	#>
 	[CmdletBinding()]
 	param(
-		[ValidateSet('Development', 'FileSystem', 'System', 'Media', 'Utilities')]
+		[ValidateSet('Development', 'FileSystem', 'System', 'Media', 'Utilities', 'Configuration')]
 		[string]$Category,
 		
 		[switch]$Detailed,
@@ -148,7 +148,6 @@ function Get-CianTools {
 			@{ Name = 'New-TouchFile'; Alias = 'touch'; Description = 'Create/update file timestamps (Unix touch)' },
 			@{ Name = 'Get-DirectorySizes'; Alias = ''; Description = 'Show directory sizes in current location' },
 			@{ Name = 'Compress-DirectoriesToArchive'; Alias = 'zipall'; Description = 'Compress directories to 7z archives' },
-			@{ Name = 'Convert-DirectoriesToCBZ'; Alias = 'dirs2cbz'; Description = 'Convert directories to CBZ format' },
 			@{ Name = 'Find-Files'; Alias = 'find'; Description = 'Recursively search for files' },
 			@{ Name = 'Invoke-ForEachDirectory'; Alias = 'fed'; Description = 'Execute command in each subdirectory' },
 			@{ Name = 'Get-FileCrc32'; Alias = 'crc32'; Description = 'Calculate CRC32 checksum of files' }
@@ -224,10 +223,10 @@ function Get-CianTools {
 	if (-not $Detailed) {
 		Write-Host "`n" -NoNewline
 		Write-Host "Tips:" -ForegroundColor Yellow
-		Write-Host "  • Use 'Get-CianTools -Detailed' for full help" -ForegroundColor Gray
-		Write-Host "  • Use 'Get-Help <function-name>' for specific function help" -ForegroundColor Gray
-		Write-Host "  • Use 'Get-CianTools -Category <name>' to filter by category" -ForegroundColor Gray
-		Write-Host "  • Most functions have short aliases shown in brackets" -ForegroundColor Gray
+		Write-Host "  - Use 'Get-CianTools -Detailed' for full help" -ForegroundColor Gray
+		Write-Host "  - Use 'Get-Help <function-name>' for specific function help" -ForegroundColor Gray
+		Write-Host "  - Use 'Get-CianTools -Category <name>' to filter by category" -ForegroundColor Gray
+		Write-Host "  - Most functions have short aliases shown in brackets" -ForegroundColor Gray
 	}
 }
 
