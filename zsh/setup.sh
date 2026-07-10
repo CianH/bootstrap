@@ -166,7 +166,11 @@ echo "Checking symlinks..."
 run_step "Link .zshenv" link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
 run_step "Link .zprofile" link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
 run_step "Link .zshrc" link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
-run_step "Link aliases" link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
+if [[ -d ~/.zsh/oh-my-zsh/custom ]]; then
+    run_step "Link aliases" link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
+else
+    echo "  ! Skipping aliases link - oh-my-zsh is not installed"
+fi
 run_step "Link vimrc" link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
 run_step "Link gitconfig" link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
 

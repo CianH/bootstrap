@@ -1,19 +1,4 @@
 # ZSH profile - loaded once for login shells
-# Environment variables and PATH setup
-
-# ------------------------------
-# PATH
-# ------------------------------
-[[ -d $HOME/bin ]] && export PATH="$HOME/bin:$PATH"
-[[ -d $HOME/.local/bin ]] && export PATH="$HOME/.local/bin:$PATH"
-[[ -d /usr/local/sbin ]] && export PATH="/usr/local/sbin:$PATH"
-
-# ------------------------------
-# Environment
-# ------------------------------
-export EDITOR='vim'
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
-export NEXT_TELEMETRY_DISABLED=1  # https://nextjs.org/telemetry
 
 # ------------------------------
 # macOS specific

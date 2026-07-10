@@ -1,5 +1,10 @@
-# ZSH configuration - interactive shell settings
-# (PATH and environment variables are in .zprofile)
+# ------------------------------
+# PATH
+# ------------------------------
+typeset -U path PATH
+[[ -d /usr/local/sbin ]] && path=(/usr/local/sbin $path)
+[[ -d $HOME/.local/bin ]] && path=($HOME/.local/bin $path)
+[[ -d $HOME/bin ]] && path=($HOME/bin $path)
 
 # ------------------------------
 # Oh My ZSH
@@ -13,14 +18,26 @@ zstyle ':omz:update' mode reminder
 zstyle ':omz:update' frequency 30
 zstyle ':omz:update' verbosity silent
 
+# Homebrew completions must be on FPATH before Oh My Zsh initializes completion.
+if [[ $OSTYPE = darwin* ]] && type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+  alias brewup="brew outdated | xargs brew install"
+fi
+
 # Plugins
 plugins=(
   git
   sudo
-  zsh-autosuggestions
 )
+[[ -d "$ZSH/custom/plugins/zsh-autosuggestions" ]] && plugins+=(zsh-autosuggestions)
 
-source $ZSH/oh-my-zsh.sh
+if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+else
+  print -u2 "Oh My Zsh is not installed; run zsh/setup.sh without --local to install it."
+  autoload -Uz compinit
+  compinit
+fi
 
 # ------------------------------
 # Prompt customization
@@ -46,25 +63,6 @@ SAVEHIST=10000
 setopt hist_ignore_all_dups  # Remove older duplicate entries from history
 setopt hist_reduce_blanks    # Remove superfluous blanks from history items
 setopt share_history         # Share history between all sessions
-
-# ------------------------------
-# macOS specific
-# ------------------------------
-if [[ $OSTYPE = darwin* ]]; then
-  alias brewup="brew outdated | xargs brew install"
-  
-  # Homebrew completions (must be before compinit)
-  if type brew &>/dev/null; then
-    FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-  fi
-fi
-
-# ------------------------------
-# Completion
-# ------------------------------
-zstyle :compinstall filename "$ZDOTDIR/.zshrc"
-autoload -Uz compinit
-compinit
 
 # ------------------------------
 # Local overrides (not in repo)
