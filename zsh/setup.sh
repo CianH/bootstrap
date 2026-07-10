@@ -7,7 +7,19 @@
 #   ./setup.sh              # Normal setup (clones plugins if missing)
 #   ./setup.sh --local      # Skip network operations (symlinks only)
 
-set -e
+typeset -a SETUP_FAILURES=()
+
+record_failure() {
+    SETUP_FAILURES+=("$1")
+}
+
+run_step() {
+    local description="$1"
+    shift
+    if ! "$@"; then
+        record_failure "$description"
+    fi
+}
 
 # Get the directory where this script lives (resolves symlinks)
 SCRIPT_DIR="${0:A:h}"
@@ -37,31 +49,70 @@ link_file() {
         fi
         # Symlink points elsewhere - check if target exists
         if [[ -e "$dest" ]]; then
-            # Target exists, archive the content before replacing
-            echo "  → $dest (archiving old target to .old)"
             if [[ -e "$dest.old" || -L "$dest.old" ]]; then
                 echo "  ! Cannot replace $dest: backup already exists at $dest.old" >&2
                 return 1
             fi
-            cp -rL "$dest" "$dest.old"
+            # Target exists, archive the content before replacing
+            echo "  → $dest (archiving old target to .old)"
+            if ! cp -rL "$dest" "$dest.old"; then
+                echo "  ! Failed to archive existing target for $dest" >&2
+                return 1
+            fi
         else
             echo "  → $dest (removing broken symlink)"
         fi
-        rm -f "$dest"
-        ln -s "$src" "$dest"
+        if ! rm -f "$dest"; then
+            echo "  ! Failed to remove existing symlink at $dest" >&2
+            return 1
+        fi
+        if ! ln -s "$src" "$dest"; then
+            echo "  ! Failed to create symlink at $dest" >&2
+            return 1
+        fi
         echo "  ✓ $dest (created)"
     elif [[ -e "$dest" ]]; then
-        echo "  → $dest (backing up existing to .old)"
         if [[ -e "$dest.old" || -L "$dest.old" ]]; then
             echo "  ! Cannot replace $dest: backup already exists at $dest.old" >&2
             return 1
         fi
-        mv "$dest" "$dest.old"
-        ln -s "$src" "$dest"
+        echo "  → $dest (backing up existing to .old)"
+        if ! mv "$dest" "$dest.old"; then
+            echo "  ! Failed to archive existing path at $dest" >&2
+            return 1
+        fi
+        if ! ln -s "$src" "$dest"; then
+            echo "  ! Failed to create symlink at $dest" >&2
+            return 1
+        fi
         echo "  ✓ $dest (created)"
     else
-        ln -s "$src" "$dest"
+        if ! ln -s "$src" "$dest"; then
+            echo "  ! Failed to create symlink at $dest" >&2
+            return 1
+        fi
         echo "  ✓ $dest (created)"
+    fi
+}
+
+create_gitconfig_local() {
+    if [[ -f ~/.gitconfig.old ]]; then
+        echo "  → Generating ~/.gitconfig.local from previous .gitconfig"
+        {
+            echo "# Machine-specific gitconfig - DO NOT COMMIT"
+            echo "# Generated from previous .gitconfig during bootstrap setup"
+            echo ""
+        } > ~/.gitconfig.local || return 1
+        git --no-pager config --file ~/.gitconfig.old --get-regexp '^user\.' | while read -r key value; do
+            git config --file ~/.gitconfig.local "$key" "$value" || return 1
+        done
+        git --no-pager config --file ~/.gitconfig.old --get-regexp '^credential\.' | while read -r key value; do
+            git config --file ~/.gitconfig.local --add "$key" "$value" || return 1
+        done
+        echo "  ✓ ~/.gitconfig.local (migrated from backup)"
+    else
+        echo "  → Creating ~/.gitconfig.local from template (edit with your details)"
+        cp "$SCRIPT_DIR/../.gitconfig.local.template" ~/.gitconfig.local
     fi
 }
 
@@ -70,9 +121,9 @@ link_file() {
 # ------------------------------
 if [[ ! -d ~/.zsh ]]; then
     echo "Creating ~/.zsh directory..."
-    mkdir -p ~/.zsh
+    run_step "Create ~/.zsh directory" mkdir -p ~/.zsh
 fi
-chmod 700 ~/.zsh
+run_step "Set ~/.zsh permissions" chmod 700 ~/.zsh
 
 # ------------------------------
 # Install oh-my-zsh if missing
@@ -83,12 +134,14 @@ if [[ ! -d ~/.zsh/oh-my-zsh ]]; then
         echo "  ! Skipping oh-my-zsh install (--local mode)"
     else
         echo "  Installing oh-my-zsh..."
-        git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ~/.zsh/oh-my-zsh
+        run_step "Install oh-my-zsh" git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ~/.zsh/oh-my-zsh
     fi
 else
     echo "  ✓ Already installed"
 fi
-[[ -d ~/.zsh/oh-my-zsh ]] && find ~/.zsh/oh-my-zsh -type d -exec chmod 700 {} \;
+if [[ -d ~/.zsh/oh-my-zsh ]]; then
+    run_step "Set oh-my-zsh directory permissions" find ~/.zsh/oh-my-zsh -type d -exec chmod 700 {} \;
+fi
 
 # ------------------------------
 # Install zsh-autosuggestions plugin if missing
@@ -99,7 +152,7 @@ if [[ ! -d ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
         echo "  ! Skipping zsh-autosuggestions install (--local mode)"
     else
         echo "  Installing zsh-autosuggestions..."
-        git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions
+        run_step "Install zsh-autosuggestions" git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/oh-my-zsh/custom/plugins/zsh-autosuggestions
     fi
 else
     echo "  ✓ Already installed"
@@ -110,33 +163,16 @@ fi
 # ------------------------------
 echo "Checking symlinks..."
 
-link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
-link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
-link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
-link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
-link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
-link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
+run_step "Link .zshenv" link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
+run_step "Link .zprofile" link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
+run_step "Link .zshrc" link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
+run_step "Link aliases" link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
+run_step "Link vimrc" link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
+run_step "Link gitconfig" link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
 
 # Create .gitconfig.local if it doesn't exist
 if [[ ! -f ~/.gitconfig.local ]]; then
-    if [[ -f ~/.gitconfig.old ]]; then
-        # Extract machine-specific sections from the backup
-        echo "  → Generating ~/.gitconfig.local from previous .gitconfig"
-        echo "# Machine-specific gitconfig - DO NOT COMMIT" > ~/.gitconfig.local
-        echo "# Generated from previous .gitconfig during bootstrap setup" >> ~/.gitconfig.local
-        echo "" >> ~/.gitconfig.local
-        git --no-pager config --file ~/.gitconfig.old --get-regexp '^user\.' | while read -r key value; do
-            git config --file ~/.gitconfig.local "$key" "$value"
-        done
-        # Credential helpers use multi-valued keys (empty helper= to reset, then actual helper)
-        git --no-pager config --file ~/.gitconfig.old --get-regexp '^credential\.' | while read -r key value; do
-            git config --file ~/.gitconfig.local --add "$key" "$value"
-        done
-        echo "  ✓ ~/.gitconfig.local (migrated from backup)"
-    else
-        echo "  → Creating ~/.gitconfig.local from template (edit with your details)"
-        cp "$SCRIPT_DIR/../.gitconfig.local.template" ~/.gitconfig.local
-    fi
+    run_step "Create ~/.gitconfig.local" create_gitconfig_local
 fi
 
 # ------------------------------
@@ -150,9 +186,13 @@ if [[ -d "$HOOKS_DIR" ]]; then
     current_hooks_path=$(git config --file ~/.gitconfig.local --get core.hooksPath 2>/dev/null || true)
     if [[ "$current_hooks_path" != "$HOOKS_DIR" ]]; then
         echo "  → Setting core.hooksPath = $HOOKS_DIR in ~/.gitconfig.local"
-        git config --file ~/.gitconfig.local core.hooksPath "$HOOKS_DIR"
+        if ! git config --file ~/.gitconfig.local core.hooksPath "$HOOKS_DIR"; then
+            record_failure "Configure global git hooks"
+        fi
     fi
-    echo "  ✓ Global git hooks ($HOOKS_DIR)"
+    if [[ "$(git config --file ~/.gitconfig.local --get core.hooksPath 2>/dev/null)" == "$HOOKS_DIR" ]]; then
+        echo "  ✓ Global git hooks ($HOOKS_DIR)"
+    fi
 fi
 
 # ------------------------------
@@ -165,16 +205,19 @@ echo "Checking Copilot CLI setup..."
 
 # Create ~/.copilot if needed
 if [[ ! -d ~/.copilot ]]; then
-    mkdir -p ~/.copilot
-    echo "  Created ~/.copilot/"
+    if mkdir -p ~/.copilot; then
+        echo "  Created ~/.copilot/"
+    else
+        record_failure "Create ~/.copilot directory"
+    fi
 fi
 
 # Copilot instructions
-link_file "$REPO_ROOT/ai/copilot-instructions.md" ~/.copilot/copilot-instructions.md
+run_step "Link Copilot instructions" link_file "$REPO_ROOT/ai/copilot-instructions.md" ~/.copilot/copilot-instructions.md
 
 # Memory (diary, reflections) - requires docs repo
 if [[ -d "$DEV_ROOT/docs/memory" ]]; then
-    link_file "$DEV_ROOT/docs/memory" ~/.copilot/memory
+    run_step "Link Copilot memory" link_file "$DEV_ROOT/docs/memory" ~/.copilot/memory
 else
     echo "  ! Skipping memory symlink - docs repo not found at $DEV_ROOT/docs"
 fi
@@ -182,6 +225,15 @@ fi
 # ------------------------------
 # Done
 # ------------------------------
+if (( ${#SETUP_FAILURES[@]} > 0 )); then
+    echo ""
+    echo "Setup completed with errors:"
+    for failure in "${SETUP_FAILURES[@]}"; do
+        echo "  - $failure"
+    done
+    exit 1
+fi
+
 echo ""
 echo "Setup complete!"
 echo "Restart your shell or run: source ~/.zshenv && source ~/.zsh/.zshrc"
