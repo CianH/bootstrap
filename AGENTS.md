@@ -30,6 +30,10 @@ Additionally, the same path-leak rule applies to commit messages: never referenc
 
 Do not add `Copilot-Session` trailers to commits. A session identifier is unnecessary correlation metadata for this public repository.
 
+## Subagents
+
+Use GPT-5.6 Sol, Terra, or Luna for subagents as appropriate. Do not use Claude models unless explicitly requested.
+
 ## Setup script changes
 
 `setup.sh` is idempotent and safe to re-run. Any addition must preserve this: check current state before making changes, and exit cleanly if already configured. Use the existing `link_file` helper for symlinks (it backs up existing files to `.old` before replacing).
