@@ -39,7 +39,10 @@ link_file() {
         if [[ -e "$dest" ]]; then
             # Target exists, archive the content before replacing
             echo "  → $dest (archiving old target to .old)"
-            [[ -e "$dest.old" ]] && rm -rf "$dest.old"
+            if [[ -e "$dest.old" || -L "$dest.old" ]]; then
+                echo "  ! Cannot replace $dest: backup already exists at $dest.old" >&2
+                return 1
+            fi
             cp -rL "$dest" "$dest.old"
         else
             echo "  → $dest (removing broken symlink)"
@@ -49,7 +52,10 @@ link_file() {
         echo "  ✓ $dest (created)"
     elif [[ -e "$dest" ]]; then
         echo "  → $dest (backing up existing to .old)"
-        [[ -e "$dest.old" ]] && rm -rf "$dest.old"
+        if [[ -e "$dest.old" || -L "$dest.old" ]]; then
+            echo "  ! Cannot replace $dest: backup already exists at $dest.old" >&2
+            return 1
+        fi
         mv "$dest" "$dest.old"
         ln -s "$src" "$dest"
         echo "  ✓ $dest (created)"

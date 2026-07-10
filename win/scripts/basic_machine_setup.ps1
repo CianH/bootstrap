@@ -36,7 +36,9 @@ function Set-SafeSymlink {
 				}
 				# Target exists but points elsewhere - archive it
 				$oldPath = "$LinkPath.old"
-				if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
+				if (Get-Item -LiteralPath $oldPath -Force -ErrorAction SilentlyContinue) {
+					throw "Cannot replace $Description because backup already exists: $oldPath"
+				}
 				Copy-Item -Path $currentTarget -Destination $oldPath -Recurse -Force
 				Write-Host "  -> $Description (archived old target to .old)" -ForegroundColor Yellow
 			} else {
@@ -46,7 +48,9 @@ function Set-SafeSymlink {
 		} else {
 			# It's a real file/folder - archive it
 			$oldPath = "$LinkPath.old"
-			if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
+			if (Get-Item -LiteralPath $oldPath -Force -ErrorAction SilentlyContinue) {
+				throw "Cannot replace $Description because backup already exists: $oldPath"
+			}
 			Move-Item -Path $LinkPath -Destination $oldPath -Force
 			Write-Host "  -> $Description (archived existing to .old)" -ForegroundColor Yellow
 		}
