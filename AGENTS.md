@@ -28,6 +28,8 @@ Same rule as commit message bodies in general (see the global commit-msg hook in
 
 Additionally, the same path-leak rule applies to commit messages: never reference specific local filesystem paths in commit messages. Use generic descriptions ("the per-machine gitconfig override file") instead of literal paths ("~/dev/bootstrap/...").
 
+Do not add `Copilot-Session` trailers to commits. A session identifier is unnecessary correlation metadata for this public repository.
+
 ## Setup script changes
 
 `setup.sh` is idempotent and safe to re-run. Any addition must preserve this: check current state before making changes, and exit cleanly if already configured. Use the existing `link_file` helper for symlinks (it backs up existing files to `.old` before replacing).

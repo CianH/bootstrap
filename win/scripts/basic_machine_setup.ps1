@@ -1,9 +1,9 @@
 # Basic Machine Powershell setup - Requires Admin prompt
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
-	$arguments = "& '" + $myinvocation.mycommand.definition + "'"
-	Start-Process powershell -Verb runAs -ArgumentList $arguments
-	Break
+	$powerShellPath = (Get-Process -Id $PID).Path
+	Start-Process -FilePath $powerShellPath -Verb RunAs -ArgumentList "-File", "`"$PSCommandPath`""
+	exit
 }
 
 # Helper function to create/update symlinks safely
@@ -31,16 +31,16 @@ function Set-SafeSymlink {
 				$normalizedCurrent = (Resolve-Path $currentTarget).Path.TrimEnd('\', '/')
 				$normalizedTarget = $resolvedTarget.TrimEnd('\', '/')
 				if ($normalizedCurrent -eq $normalizedTarget) {
-					Write-Host "  ✓ $Description (already linked correctly)" -ForegroundColor Green
+					Write-Host "  [OK] $Description (already linked correctly)" -ForegroundColor Green
 					return $true
 				}
 				# Target exists but points elsewhere - archive it
 				$oldPath = "$LinkPath.old"
 				if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
 				Copy-Item -Path $currentTarget -Destination $oldPath -Recurse -Force
-				Write-Host "  → $Description (archived old target to .old)" -ForegroundColor Yellow
+				Write-Host "  -> $Description (archived old target to .old)" -ForegroundColor Yellow
 			} else {
-				Write-Host "  → $Description (removing broken symlink)" -ForegroundColor Yellow
+				Write-Host "  -> $Description (removing broken symlink)" -ForegroundColor Yellow
 			}
 			Remove-Item $LinkPath -Force
 		} else {
@@ -48,16 +48,16 @@ function Set-SafeSymlink {
 			$oldPath = "$LinkPath.old"
 			if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
 			Move-Item -Path $LinkPath -Destination $oldPath -Force
-			Write-Host "  → $Description (archived existing to .old)" -ForegroundColor Yellow
+			Write-Host "  -> $Description (archived existing to .old)" -ForegroundColor Yellow
 		}
 	}
 
 	try {
 		New-Item -ItemType SymbolicLink -Path $LinkPath -Target $resolvedTarget | Out-Null
-		Write-Host "  ✓ $Description (created)" -ForegroundColor Green
+		Write-Host "  [OK] $Description (created)" -ForegroundColor Green
 		return $true
 	} catch {
-		Write-Error "  ✗ $Description failed: $($_.Exception.Message)"
+		Write-Error "  [ERROR] $Description failed: $($_.Exception.Message)"
 		return $false
 	}
 }
@@ -110,7 +110,7 @@ if (-not (Test-Path $gitconfigLocal)) {
 	$gitconfigOld = "$env:USERPROFILE\.gitconfig.old"
 	if (Test-Path $gitconfigOld) {
 		# Extract machine-specific sections from the backup
-		Write-Host "  → Generating .gitconfig.local from previous .gitconfig" -ForegroundColor Yellow
+		Write-Host "  -> Generating .gitconfig.local from previous .gitconfig" -ForegroundColor Yellow
 		"# Machine-specific gitconfig - DO NOT COMMIT" | Set-Content $gitconfigLocal
 		"# Generated from previous .gitconfig during bootstrap setup" | Add-Content $gitconfigLocal
 		"" | Add-Content $gitconfigLocal
@@ -130,12 +130,12 @@ if (-not (Test-Path $gitconfigLocal)) {
 				git config --file $gitconfigLocal --add $parts[0] $value
 			}
 		}
-		Write-Host "  ✓ .gitconfig.local (migrated from backup)" -ForegroundColor Green
+		Write-Host "  [OK] .gitconfig.local (migrated from backup)" -ForegroundColor Green
 	} else {
 		$templatePath = Join-Path $repoRoot ".gitconfig.local.template"
 		if (Test-Path $templatePath) {
 			Copy-Item $templatePath $gitconfigLocal
-			Write-Host "  → Created .gitconfig.local from template (edit with your details)" -ForegroundColor Yellow
+			Write-Host "  -> Created .gitconfig.local from template (edit with your details)" -ForegroundColor Yellow
 		}
 	}
 }
@@ -146,9 +146,9 @@ Write-Host "`nChecking posh-git..." -ForegroundColor Cyan
 if (-not (Get-Module -ListAvailable -Name posh-git)) {
 	Write-Host "  Installing from PowerShell Gallery..."
 	Install-Module posh-git -Scope CurrentUser -Force
-	Write-Host "  ✓ Installed" -ForegroundColor Green
+	Write-Host "  [OK] Installed" -ForegroundColor Green
 } else {
-	Write-Host "  ✓ Already installed" -ForegroundColor Green
+	Write-Host "  [OK] Already installed" -ForegroundColor Green
 }
 
 # ------------------------------
