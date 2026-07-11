@@ -1,4 +1,4 @@
-# Shared aliases - symlink to $ZSH_CUSTOM/aliases.zsh
+# Shared aliases - sourced by .zshrc
 
 # listing
 alias la="ls -lah"

@@ -16,12 +16,11 @@ CASE_SENSITIVE="true"
 # Update settings
 zstyle ':omz:update' mode reminder
 zstyle ':omz:update' frequency 30
-zstyle ':omz:update' verbosity silent
+zstyle ':omz:update' verbose silent
 
 # Homebrew completions must be on FPATH before Oh My Zsh initializes completion.
 if [[ $OSTYPE = darwin* ]] && type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-  alias brewup="brew outdated | xargs brew install"
 fi
 
 # Plugins
@@ -38,6 +37,8 @@ else
   autoload -Uz compinit
   compinit
 fi
+
+[[ -f $ZDOTDIR/aliases.zsh ]] && source $ZDOTDIR/aliases.zsh
 
 # ------------------------------
 # Prompt customization
@@ -62,7 +63,8 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt hist_ignore_all_dups  # Remove older duplicate entries from history
 setopt hist_reduce_blanks    # Remove superfluous blanks from history items
-setopt share_history         # Share history between all sessions
+unsetopt share_history       # Keep live histories session-local
+setopt inc_append_history    # Append each command to the shared history file
 
 # ------------------------------
 # Local overrides (not in repo)
