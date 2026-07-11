@@ -95,6 +95,32 @@ link_file() {
     fi
 }
 
+install_aliases() {
+    local src="${SCRIPT_DIR}/aliases.zsh"
+    local legacy=~/.zsh/oh-my-zsh/custom/aliases.zsh
+    src="${src:A}"
+
+    link_file "$src" ~/.zsh/aliases.zsh || return 1
+
+    [[ -e "$legacy" || -L "$legacy" ]] || return 0
+    if [[ ! -L "$legacy" ]]; then
+        echo "  ! Cannot remove $legacy: existing path is not a symlink" >&2
+        return 1
+    fi
+
+    local current=$(readlink -f "$legacy" 2>/dev/null || readlink "$legacy")
+    if [[ "$current" != "$src" ]]; then
+        echo "  ! Cannot remove $legacy: symlink points elsewhere" >&2
+        return 1
+    fi
+
+    if ! rm -f "$legacy"; then
+        echo "  ! Failed to remove obsolete symlink at $legacy" >&2
+        return 1
+    fi
+    echo "  ✓ $legacy (removed obsolete link)"
+}
+
 create_gitconfig_local() {
     if [[ -f ~/.gitconfig.old ]]; then
         echo "  → Generating ~/.gitconfig.local from previous .gitconfig"
@@ -163,14 +189,11 @@ fi
 # ------------------------------
 echo "Checking symlinks..."
 
-run_step "Link .zshenv" link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
+run_step "Link ~/.zshenv" link_file "$SCRIPT_DIR/.zshenv" ~/.zshenv
+run_step "Link ~/.zsh/.zshenv" link_file "$SCRIPT_DIR/.zshenv" ~/.zsh/.zshenv
 run_step "Link .zprofile" link_file "$SCRIPT_DIR/.zprofile" ~/.zsh/.zprofile
 run_step "Link .zshrc" link_file "$SCRIPT_DIR/.zshrc" ~/.zsh/.zshrc
-if [[ -d ~/.zsh/oh-my-zsh/custom ]]; then
-    run_step "Link aliases" link_file "$SCRIPT_DIR/aliases.zsh" ~/.zsh/oh-my-zsh/custom/aliases.zsh
-else
-    echo "  ! Skipping aliases link - oh-my-zsh is not installed"
-fi
+run_step "Install aliases" install_aliases
 run_step "Link vimrc" link_file "$SCRIPT_DIR/../.vimrc" ~/.vimrc
 run_step "Link gitconfig" link_file "$SCRIPT_DIR/../.gitconfig" ~/.gitconfig
 
@@ -240,4 +263,4 @@ fi
 
 echo ""
 echo "Setup complete!"
-echo "Restart your shell or run: source ~/.zshenv && source ~/.zsh/.zshrc"
+echo "Restart your shell to apply changes."
