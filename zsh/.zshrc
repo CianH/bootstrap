@@ -18,11 +18,6 @@ zstyle ':omz:update' mode reminder
 zstyle ':omz:update' frequency 30
 zstyle ':omz:update' verbose silent
 
-# Homebrew completions must be on FPATH before Oh My Zsh initializes completion.
-if [[ $OSTYPE = darwin* ]] && type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-fi
-
 # Plugins
 plugins=(
   git
