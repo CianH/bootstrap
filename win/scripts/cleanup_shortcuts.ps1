@@ -1,16 +1,47 @@
+[CmdletBinding(SupportsShouldProcess)]
+param()
+
 # Requires Admin prompt
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") -and -not $WhatIfPreference)
 {
-	$arguments = "& '" + $myinvocation.mycommand.definition + "'"
-	Start-Process powershell -Verb runAs -ArgumentList $arguments
-	Break
+	$powerShellPath = (Get-Process -Id $PID -ErrorAction Stop).Path
+	$command = "& '" + $MyInvocation.MyCommand.Definition + "'"
+	if ($PSBoundParameters.ContainsKey("Confirm") -and $PSBoundParameters["Confirm"]) {
+		$command += " -Confirm"
+	}
+	$arguments = "-NoProfile -Command `"$command`""
+	$process = Start-Process -FilePath $powerShellPath -Verb RunAs -ArgumentList $arguments -Wait -PassThru -ErrorAction Stop
+	exit $process.ExitCode
 }
 
 ### Used to remove annoying folders and shortcuts that pollute my start menu after every upgrade ###
-$ProgramDataStart = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
+$ProgramDataStart = "$env:ProgramData\Microsoft\Windows\Start Menu\Programs"
 $AppDataStart = "$env:AppData\Microsoft\Windows\Start Menu\Programs"
+$cleanupFailed = $false
 
-function Update-StartMenuShortcut{
+function Invoke-CleanupAction {
+	[CmdletBinding(SupportsShouldProcess)]
+	param(
+		$Target,
+		$Action,
+		[scriptblock]$Operation
+	)
+
+	if (-not $PSCmdlet.ShouldProcess($Target, $Action)) {
+		return $WhatIfPreference
+	}
+
+	try {
+		& $Operation
+		return $true
+	} catch {
+		$script:cleanupFailed = $true
+		Write-Error $_ -ErrorAction Continue
+		return $false
+	}
+}
+
+function Update-StartMenuShortcut {
 	param(
 		$RootStartMenuFolder,
 		$FolderName,
@@ -19,31 +50,49 @@ function Update-StartMenuShortcut{
 	)
 
 	Write-Output "Working on $ShortcutName"
-	if (Test-Path "$RootStartMenuFolder\$ShortcutName"){
-		if (Test-Path "$RootStartMenuFolder\$FolderName"){
-			Remove-Item -r -force "$RootStartMenuFolder\$FolderName"
+
+	$shortcutAtRoot = Test-Path "$RootStartMenuFolder\$ShortcutName"
+	if (-not $shortcutAtRoot -and (Test-Path "$RootStartMenuFolder\$FolderName\$ShortcutName")) {
+		$shortcutAtRoot = Invoke-CleanupAction "$RootStartMenuFolder\$FolderName\$ShortcutName" "Move shortcut to $RootStartMenuFolder" {
+			Move-Item $RootStartMenuFolder\$FolderName\$ShortcutName $RootStartMenuFolder\ -ErrorAction Stop
 		}
 	}
-	else{
-		if (Test-Path $RootStartMenuFolder\$FolderName\$ShortcutName){
-			Move-Item $RootStartMenuFolder\$FolderName\$ShortcutName $RootStartMenuFolder\
-		}
+
+	if ($shortcutAtRoot -and (Test-Path "$RootStartMenuFolder\$FolderName")) {
+		[void](Invoke-CleanupAction "$RootStartMenuFolder\$FolderName" "Remove Start menu folder and all contents" {
+			Remove-Item -Recurse -Force "$RootStartMenuFolder\$FolderName" -ErrorAction Stop
+		})
 	}
-	if ($Desktop){
+
+	if ($Desktop) {
 		Remove-DesktopShortcut $ShortcutName
 	}
 }
 
-function Remove-DesktopShortcut{
+function Remove-DesktopShortcut {
 	param(
 		[parameter(Mandatory = $true)]$ShortcutName
 	)
 
-  if (Test-Path "$env:PUBLIC\Desktop\$ShortcutName"){
-		Remove-Item "$env:PUBLIC\Desktop\$ShortcutName"
+	if (Test-Path "$env:PUBLIC\Desktop\$ShortcutName") {
+		[void](Invoke-CleanupAction "$env:PUBLIC\Desktop\$ShortcutName" "Remove desktop shortcut" {
+			Remove-Item "$env:PUBLIC\Desktop\$ShortcutName" -ErrorAction Stop
+		})
 	}
-	if (Test-Path "$env:USERPROFILE\Desktop\$ShortcutName"){
-		Remove-Item "$env:USERPROFILE\Desktop\$ShortcutName"
+	if (Test-Path "$env:USERPROFILE\Desktop\$ShortcutName") {
+		[void](Invoke-CleanupAction "$env:USERPROFILE\Desktop\$ShortcutName" "Remove desktop shortcut" {
+			Remove-Item "$env:USERPROFILE\Desktop\$ShortcutName" -ErrorAction Stop
+		})
+	}
+}
+
+function Remove-RegistryKey {
+	param($Path)
+
+	if (Test-Path $Path) {
+		[void](Invoke-CleanupAction $Path "Remove registry key" {
+			Remove-Item $Path -Recurse -ErrorAction Stop
+		})
 	}
 }
 
@@ -67,8 +116,11 @@ Remove-DesktopShortcut "Mozilla Firefox.lnk"
 
 # Remove CCleaner "Open in CCleaner", etc RegKeys
 Write-Output "Removing CCleaner regkeys"
-Remove-Item "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
-Remove-Item "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
+Remove-RegistryKey "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner"
+Remove-RegistryKey "HKCU:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..."
+Remove-RegistryKey "HKLM:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner"
+Remove-RegistryKey "HKLM:\Software\Classes\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..."
 
-Remove-Item "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Run CCleaner" -Recurse 2>$null
-Remove-Item "Registry::HKEY_CLASSES_ROOT\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\shell\Open CCleaner..." -Recurse 2>$null
+if ($cleanupFailed) {
+	exit 1
+}
