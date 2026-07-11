@@ -64,8 +64,10 @@ Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 
 # PS7+ features: prediction and additional key handlers
 if ($PSVersionTable.PSVersion.Major -ge 7) {
-	Set-PSReadLineOption -PredictionSource History
-	Set-PSReadLineOption -PredictionViewStyle ListView
+	if ($Host.UI.SupportsVirtualTerminal -and -not [Console]::IsOutputRedirected) {
+		Set-PSReadLineOption -PredictionSource History
+		Set-PSReadLineOption -PredictionViewStyle ListView
+	}
 	Set-PSReadLineKeyHandler -Chord 'Ctrl+d' -Function DeleteChar
 	Set-PSReadLineKeyHandler -Chord 'Ctrl+w' -Function BackwardDeleteWord
 	Set-PSReadLineKeyHandler -Chord 'Ctrl+LeftArrow' -Function BackwardWord
