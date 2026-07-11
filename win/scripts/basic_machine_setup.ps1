@@ -85,24 +85,94 @@ function Invoke-SetupStep {
 	}
 }
 
+function Ensure-RealDirectory {
+	param(
+		[string]$Path,
+		[string]$Description
+	)
+
+	$item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+	if ($item) {
+		if (-not $item.PSIsContainer -or ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+			throw "$Description must be a real directory: $Path"
+		}
+		return
+	}
+
+	New-Item -ItemType Directory -Path $Path -ErrorAction Stop | Out-Null
+	Write-Host "  Created $Description" -ForegroundColor Green
+}
+
+function Test-RealDirectory {
+	param([string]$Path)
+
+	$item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+	return $item -and $item.PSIsContainer -and -not ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
+}
+
+function Install-PoshGitForPowerShell7 {
+	$pwsh = Get-Command pwsh -ErrorAction SilentlyContinue
+	if (-not $pwsh) {
+		throw "PowerShell 7 is not installed or is not available in PATH"
+	}
+
+	$installCommand = "if (-not (Get-Module -ListAvailable -Name posh-git)) { Install-Module posh-git -Scope CurrentUser -Force -ErrorAction Stop }"
+	& $pwsh.Source -NoProfile -NonInteractive -Command $installCommand
+	if ($LASTEXITCODE -ne 0) {
+		throw "PowerShell 7 failed to install posh-git"
+	}
+
+	Write-Host "  [OK] Available to PowerShell 7" -ForegroundColor Green
+}
+
 $repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 
 # Setup symlinks
 Write-Host "`nChecking symlinks..." -ForegroundColor Cyan
 $powershellTarget = Join-Path $PSScriptRoot "..\powershell"
+$profileTarget = Join-Path $powershellTarget "Microsoft.PowerShell_profile.ps1"
+$cianToolsTarget = Join-Path $powershellTarget "Modules\CianTools"
+$documentsPath = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
 
-Invoke-SetupStep "WindowsPowerShell profile" {
-	Set-SafeSymlink `
-		-LinkPath "$env:USERPROFILE\Documents\WindowsPowerShell" `
-		-TargetPath $powershellTarget `
-		-Description "WindowsPowerShell profile"
-}
+if (-not $documentsPath) {
+	Write-Error "  [ERROR] Could not resolve the Windows Documents folder"
+	$setupFailures.Add("Resolve Windows Documents folder")
+} else {
+	$windowsPowerShellDirectory = Join-Path $documentsPath "WindowsPowerShell"
+	$powerShellDirectory = Join-Path $documentsPath "PowerShell"
+	$profileDirectories = @(
+		@{ Name = "WindowsPowerShell"; Path = $windowsPowerShellDirectory },
+		@{ Name = "PowerShell"; Path = $powerShellDirectory }
+	)
 
-Invoke-SetupStep "PowerShell profile" {
-	Set-SafeSymlink `
-		-LinkPath "$env:USERPROFILE\Documents\PowerShell" `
-		-TargetPath $powershellTarget `
-		-Description "PowerShell profile"
+	foreach ($profileDirectory in $profileDirectories) {
+		Invoke-SetupStep "$($profileDirectory.Name) directory" {
+			Ensure-RealDirectory -Path $profileDirectory.Path -Description "$($profileDirectory.Name) profile directory"
+		}
+
+		if (Test-RealDirectory $profileDirectory.Path) {
+			$modulesDirectory = Join-Path $profileDirectory.Path "Modules"
+			Invoke-SetupStep "$($profileDirectory.Name) modules directory" {
+				Ensure-RealDirectory -Path $modulesDirectory -Description "$($profileDirectory.Name) modules directory"
+			}
+
+			Invoke-SetupStep "$($profileDirectory.Name) profile" {
+				Set-SafeSymlink `
+					-LinkPath (Join-Path $profileDirectory.Path "Microsoft.PowerShell_profile.ps1") `
+					-TargetPath $profileTarget `
+					-Description "$($profileDirectory.Name) profile"
+			}
+
+			if (Test-RealDirectory $modulesDirectory) {
+				Invoke-SetupStep "$($profileDirectory.Name) CianTools module" {
+					Set-SafeSymlink `
+						-LinkPath (Join-Path $modulesDirectory "CianTools") `
+						-TargetPath $cianToolsTarget `
+						-Description "$($profileDirectory.Name) CianTools module"
+				}
+			}
+		}
+	}
 }
 
 # Windows Terminal symlink
@@ -175,17 +245,32 @@ if (-not (Test-Path $gitconfigLocal)) {
 	}
 }
 
+# Configure global git hooks using the checkout's resolved path
+$hooksPath = Join-Path $repoRoot "git\hooks"
+if (Test-Path $hooksPath) {
+	Invoke-SetupStep "Global git hooks" {
+		if (-not (Test-Path $gitconfigLocal)) {
+			throw ".gitconfig.local is unavailable"
+		}
+
+		git config --file $gitconfigLocal core.hooksPath $hooksPath
+		if ($LASTEXITCODE -ne 0) {
+			throw "Failed to set core.hooksPath"
+		}
+
+		$configuredHooksPath = git config --file $gitconfigLocal --get core.hooksPath
+		if ($LASTEXITCODE -ne 0 -or $configuredHooksPath -ne $hooksPath) {
+			throw "core.hooksPath verification failed"
+		}
+
+		Write-Host "  [OK] Global git hooks ($hooksPath)" -ForegroundColor Green
+	}
+}
 
 # Install posh-git from PowerShell Gallery (for git tab completion)
 Write-Host "`nChecking posh-git..." -ForegroundColor Cyan
-if (-not (Get-Module -ListAvailable -Name posh-git)) {
-	Write-Host "  Installing from PowerShell Gallery..."
-	Invoke-SetupStep "posh-git installation" {
-		Install-Module posh-git -Scope CurrentUser -Force -ErrorAction Stop
-		Write-Host "  [OK] Installed" -ForegroundColor Green
-	}
-} else {
-	Write-Host "  [OK] Already installed" -ForegroundColor Green
+Invoke-SetupStep "PowerShell 7 posh-git installation" {
+	Install-PoshGitForPowerShell7
 }
 
 # ------------------------------

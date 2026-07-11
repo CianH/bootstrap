@@ -28,7 +28,8 @@ C:\dev\bootstrap\win\scripts\basic_machine_setup.ps1
 ### What the setup scripts do
 
 - Install shell plugins (oh-my-zsh + zsh-autosuggestions / posh-git)
-- Symlink shell config, vimrc, and gitconfig
+- Symlink shell profiles, custom modules, vimrc, and gitconfig
+- Configure the shared global Git hooks
 - **Copilot CLI**: symlink instructions and memory into `~/.copilot/`
   - `copilot-instructions.md` → `bootstrap/ai/copilot-instructions.md`
   - `memory/` → `docs/memory/` (diary entries, reflections)
