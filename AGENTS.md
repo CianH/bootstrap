@@ -30,6 +30,8 @@ Additionally, the same path-leak rule applies to commit messages: never referenc
 
 Do not add `Copilot-Session` trailers to commits. A session identifier is unnecessary correlation metadata for this public repository.
 
+Never create a revert commit. When correcting a bad local commit, rewrite history to remove or fix it while preserving any later valid commits.
+
 ## Subagents
 
 Use GPT-5.6 Sol, Terra, or Luna for subagents as appropriate. Do not use Claude models unless explicitly requested.
