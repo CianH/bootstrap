@@ -54,6 +54,8 @@ This is the rule I break daily and get corrected on daily. It is first in this f
 
 ## Workflow
 - Notes are stored at `$NOTES_DIR/` (set in `.zshrc.local`, e.g. `~/dev/docs/notes`). <!-- added:2026-02-15 cited:0 source:explicit -->
+- **User-facing files must be written to a stable, easy-to-find location the user already uses, normally `$NOTES_DIR/`, the current project, or an explicit user path. Never make a session-state GUID directory the only location for a deliverable; session-state is internal scratch storage, not a handoff location.** <!-- added:2026-07-11 source:explicit -->
+- **When working through a numbered issue list and implementation is delegated elsewhere, writing the handoff is a milestone, not completion. Continue immediately to the next issue unless the user explicitly asks to pause.** <!-- added:2026-07-11 source:explicit -->
 - Never "remember" or "note" something without writing it to a persistent file. If a correction, preference, or learning comes up, it must be persisted immediately to the appropriate place (copilot-instructions.md, a SKILL.md, or docs/notes/) — not just acknowledged in conversation. Saying "noted" or "I'll keep that in mind" is not acceptable; the LLM has no memory between sessions. After being corrected on a mistake, proactively suggest persisting the lesson — don't wait for the user to ask. <!-- added:2026-02-02 cited:3 source:explicit -->
 - For multi-step or research-heavy tasks, prefer delegating to sub-agents over doing everything inline — this preserves main context and enables parallelism. Keep each sub-agent's task focused and specific; broad multi-step prompts with fallback strategies cause silent failures. Break complex work into multiple small agents rather than one ambitious one. <!-- added:2026-02-09 cited:1 -->
 - ALWAYS consciously choose the agent type AND model/effort before dispatching any sub-agent — never leave selection to the harness default. Right-size to the task's difficulty and blast radius: trivial/cosmetic or mechanical work → a cheap fast model (Haiku, or Sonnet at most); normal implementation → Sonnet; subtle, high-stakes, or data-integrity/security-critical work (touching write paths, invariants, migrations, money, auth) → a stronger reasoning model (Opus, higher effort) and/or an independent review pass. State the choice and the one-line reason when you dispatch. Dispatching two differently-risked tasks on the same default model is a tell that you skipped this step. <!-- added:2026-06-25 cited:0 source:explicit -->
@@ -82,6 +84,7 @@ This is the rule I break daily and get corrected on daily. It is first in this f
 
 ## Tools
 - When writing skills, see `scripts/ai/skills/AUTHORING.md`. <!-- added:2026-02-02 cited:3 -->
+- **Never dump a complete Docker, process, or service environment during diagnostics. Environment arrays routinely contain credentials. Query only the exact non-secret keys needed for the investigation.** <!-- added:2026-07-11 source:explicit -->
 - **There is no git remote on local-only repos — do not check for one, and never rewrite-history-gate on push status when told a repo has no remote.** Don't run `git rev-parse @{u}`, `git remote`, `git log @{u}..HEAD`, or similar "is it pushed?" probes before an interactive rebase / soft reset / amend when the user has said (or it's already established) there's no upstream. Just do the history operation. <!-- added:2026-06-27 source:explicit -->
 - When `web_fetch` truncates content (hits `max_length`) or loses fidelity (strips code blocks, images, structure), fall back to `curl` with `-H "Accept: text/markdown"`. Cloudflare-fronted sites will return clean server-converted markdown with ~80-94% fewer tokens than raw HTML. The response includes an `x-markdown-tokens` header for token budgeting before reading the body. <!-- added:2026-02-14 cited:0 source:explicit -->
 - Before calling any skill CLI, read its SKILL.md to confirm the exact command name and arguments. Never guess CLI syntax — the SKILL.md exists precisely to prevent that. If a command fails, re-read SKILL.md before retrying. <!-- added:2026-03-01 cited:0 source:explicit -->
@@ -94,4 +97,3 @@ At end of significant sessions, consider:
 3. What existing docs need updates?
 
 See docs/notes/ai-memory-workflow.md for the full workflow.
-
