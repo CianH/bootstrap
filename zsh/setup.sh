@@ -142,6 +142,31 @@ create_gitconfig_local() {
     fi
 }
 
+merge_copilot_settings() {
+    local src="${1:A}"
+    local dest="$2"
+
+    if [[ ! -f "$dest" ]]; then
+        if ! cp "$src" "$dest"; then
+            echo "  ! Failed to create $dest" >&2
+            return 1
+        fi
+        echo "  ✓ $dest (created)"
+        return 0
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "  ! Cannot merge $dest: jq is not installed" >&2
+        return 1
+    fi
+
+    local merged
+    merged=$(jq --slurpfile managed "$src" '. + $managed[0]' "$dest") || return 1
+
+    print -r -- "$merged" > "$dest" || return 1
+    echo "  ✓ $dest (managed settings applied)"
+}
+
 # ------------------------------
 # Create ~/.zsh directory
 # ------------------------------
@@ -241,6 +266,9 @@ fi
 
 # Copilot instructions
 run_step "Link Copilot instructions" link_file "$REPO_ROOT/ai/copilot-instructions.md" ~/.copilot/copilot-instructions.md
+
+# Copilot settings - managed values win, machine-specific settings are preserved
+run_step "Merge Copilot settings" merge_copilot_settings "$REPO_ROOT/ai/copilot-settings.json" ~/.copilot/settings.json
 
 # Memory (diary, reflections) - requires docs repo
 if [[ -d "$DEV_ROOT/docs/memory" ]]; then

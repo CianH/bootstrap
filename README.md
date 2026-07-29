@@ -30,7 +30,8 @@ C:\dev\bootstrap\win\scripts\basic_machine_setup.ps1
 - Install shell plugins (oh-my-zsh + zsh-autosuggestions / posh-git)
 - Symlink shell profiles, custom modules, vimrc, and gitconfig
 - Configure the shared global Git hooks
-- **Copilot CLI**: symlink instructions and memory into `~/.copilot/`
+- **Copilot CLI**: enforce shared privacy settings and symlink instructions and memory into `~/.copilot/`
+  - `ai/copilot-settings.json` → enforce memory, remote-control, and cloud-export settings while preserving all others
   - `copilot-instructions.md` → `bootstrap/ai/copilot-instructions.md`
   - `memory/` → `docs/memory/` (diary entries, reflections)
 

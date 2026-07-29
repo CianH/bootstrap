@@ -125,6 +125,29 @@ function Install-PoshGitForPowerShell7 {
 	Write-Host "  [OK] Available to PowerShell 7" -ForegroundColor Green
 }
 
+function Merge-CopilotSettings {
+	param(
+		[string]$ManagedPath,
+		[string]$SettingsPath
+	)
+
+	$managed = Get-Content -LiteralPath $ManagedPath -Raw -ErrorAction Stop | ConvertFrom-Json
+
+	if (Test-Path $SettingsPath) {
+		$settings = Get-Content -LiteralPath $SettingsPath -Raw -ErrorAction Stop | ConvertFrom-Json
+	} else {
+		$settings = [PSCustomObject]@{}
+	}
+
+	foreach ($property in $managed.PSObject.Properties) {
+		$settings | Add-Member -NotePropertyName $property.Name -NotePropertyValue $property.Value -Force
+	}
+
+	$json = $settings | ConvertTo-Json -Depth 100
+	[System.IO.File]::WriteAllText($SettingsPath, $json, [System.Text.UTF8Encoding]::new($false))
+	Write-Host "  [OK] Copilot settings (managed settings applied)" -ForegroundColor Green
+}
+
 $repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 
 # Setup symlinks
@@ -295,6 +318,13 @@ Invoke-SetupStep "Copilot instructions" {
 		-LinkPath "$copilotDir\copilot-instructions.md" `
 		-TargetPath (Join-Path $repoRoot "ai\copilot-instructions.md") `
 		-Description "Copilot instructions"
+}
+
+# Copilot settings - managed values win, machine-specific settings are preserved
+Invoke-SetupStep "Copilot settings" {
+	Merge-CopilotSettings `
+		-ManagedPath (Join-Path $repoRoot "ai\copilot-settings.json") `
+		-SettingsPath (Join-Path $copilotDir "settings.json")
 }
 
 # Memory (diary, reflections) - requires docs repo
